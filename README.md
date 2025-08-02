@@ -1,5 +1,8 @@
 ## World Map Mendix Pluggable Widget
-World Map Mendix Pluggable Widget based on [https://yanivam.github.io/react-svg-worldmap/](https://yanivam.github.io/react-svg-worldmap/) that allows you to draw contries on a world map.
+
+World Map Mendix Pluggable Widget based on
+[https://yanivam.github.io/react-svg-worldmap/](https://yanivam.github.io/react-svg-worldmap/) that allows you to draw
+contries on a world map.
 
 <img alt="Mendix Pluggable Widget World Map Logo" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/src/WorldMap.logo.png" width="65px"/>
 
@@ -32,6 +35,9 @@ From [BlockNote (Github README), ](https://github.com/TypeCellOS/BlockNote)we ca
     *   .blocknote-mendix-wrapper
     *   .blocknote-mx-dark (for dark mode only) -->
 
+### Demo
+
+![Demo](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demo.gif)
 
 <!-- ### Light
 ![Light Mode](https://github.com/StoneworxNL/block-note-mendix/blob/main/images/lightmodedemo.png)

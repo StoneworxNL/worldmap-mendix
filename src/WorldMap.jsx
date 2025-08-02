@@ -1,11 +1,10 @@
 import { createElement } from "react";
-
-import { HelloWorldSample } from "./components/HelloWorldSample";
-import "./ui/WorldMap.css";
+import { WorldMapComponent } from "./components/WorldMapComponent";
+// import "./ui/WorldMap.css";
 
 export function WorldMap({ countryList, countryISO, countryValue, sizeEnum, color }) {
     return (
-        <HelloWorldSample
+        <WorldMapComponent
             countryList={countryList}
             countryISO={countryISO}
             countryValue={countryValue}
