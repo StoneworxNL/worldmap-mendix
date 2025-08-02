@@ -51,9 +51,7 @@
             </property>
             <property key="color" type="string">
                 <caption>Color</caption>
-                <description>
-                    Color for highlighted countries. A standard color string. E.g. "red" or "#ff0000".
-                </description>
+                <description>Color for highlighted countries. A standard color string. E.g. "red" or "#ff0000".</description>
             </property>
         </propertyGroup>
     </properties>
