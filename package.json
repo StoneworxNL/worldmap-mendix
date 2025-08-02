@@ -1,0 +1,42 @@
+{
+  "name": "worldmap",
+  "widgetName": "WorldMap",
+  "version": "1.0.0",
+  "description": "World Map SVG Mendix Pluggable Widget based on https://yanivam.github.io/react-svg-worldmap",
+  "copyright": "JL 2025",
+  "author": "JL",
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT",
+  "config": {
+    "projectPath": "../../",
+    "mendixHost": "http://localhost:8080",
+    "developmentPort": 3000
+  },
+  "packagePath": "stoneworx",
+  "scripts": {
+    "start": "pluggable-widgets-tools start:server",
+    "dev": "pluggable-widgets-tools start:web",
+    "build": "pluggable-widgets-tools build:web",
+    "lint": "pluggable-widgets-tools lint",
+    "lint:fix": "pluggable-widgets-tools lint:fix",
+    "prerelease": "npm run lint",
+    "release": "pluggable-widgets-tools release:web"
+  },
+  "devDependencies": {
+    "@mendix/pluggable-widgets-tools": "^10.15.0"
+  },
+  "dependencies": {
+    "classnames": "^2.2.6",
+    "react-svg-worldmap": "^2.0.0-alpha.16"
+  },
+  "resolutions": {
+    "react": "^18.2.0",
+    "react-native": "0.72.7"
+  },
+  "overrides": {
+    "react": "^18.2.0",
+    "react-native": "0.72.7"
+  }
+}

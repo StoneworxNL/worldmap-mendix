@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget
+    id="stoneworx.worldmap.WorldMap"
+    pluginWidget="true"
+    needsEntityContext="true"
+    offlineCapable="true"
+    supportedPlatform="Web"
+    xmlns="http://www.mendix.com/widget/1.0/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd"
+>
+    <name>World Map</name>
+    <description>
+        World Map SVG Mendix Pluggable Widget based on https://yanivam.github.io/react-svg-worldmap
+    </description>
+    <icon />
+    <properties>
+        <propertyGroup caption="General">
+            <property key="countryList" type="datasource" isList="true">
+                <caption>Countries</caption>
+                <description />
+            </property>
+            <property key="countryISO" type="attribute" dataSource="countryList">
+                <caption>Country ISO</caption>
+                <description>Country ISO Code.</description>
+                <attributeTypes>
+                    <attributeType name="String" />
+                </attributeTypes>
+            </property>
+            <property key="countryValue" type="attribute" dataSource="countryList">
+                <caption>Value</caption>
+                <description>Country value. May be a string or a number.</description>
+                <attributeTypes>
+                    <attributeType name="String" />
+                    <attributeType name="Integer" />
+                    <attributeType name="Long" />
+                    <attributeType name="Decimal" />
+                </attributeTypes>
+            </property>
+            <property key="sizeEnum" type="enumeration" defaultValue="responsive">
+                <caption>Size</caption>
+                <description>Width of the map.</description>
+                <enumerationValues>
+                    <enumerationValue key="responsive">Responsive (Auto)</enumerationValue>
+                    <enumerationValue key="sm">sm (240px)</enumerationValue>
+                    <enumerationValue key="md">md (336px)</enumerationValue>
+                    <enumerationValue key="lg">lg (480px)</enumerationValue>
+                    <enumerationValue key="xl">xl (640px)</enumerationValue>
+                    <enumerationValue key="xxl">xxl (1200px)</enumerationValue>
+                </enumerationValues>
+            </property>
+            <property key="color" type="string">
+                <caption>Color</caption>
+                <description>
+                    Color for highlighted countries. A standard color string. E.g. "red" or "#ff0000".
+                </description>
+            </property>
+        </propertyGroup>
+    </properties>
+</widget>
