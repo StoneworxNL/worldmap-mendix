@@ -52,7 +52,7 @@ changing the data, as to keep the demo working for every user.
 
 ![Demo](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demo.gif)
 
-![Usage in Mendix Studio Pro](https://github.com/StoneworxNL/block-note-mendix/blob/main/images/studioproconfig.png)
+<!-- ![Usage in Mendix Studio Pro](https://github.com/StoneworxNL/block-note-mendix/blob/main/images/studioproconfig.png)
 
 ## Demo project
 
@@ -78,4 +78,4 @@ the rest of the community can benefit as well.
 code itself**, you are expected to publish them [here](https://github.com/TypeCellOS/BlockNote), as per the license
 mentioned above.
 
-The widget itself is under MIT. -->
+The widget itself is under MIT. --> -->
