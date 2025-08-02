@@ -1,7 +1,7 @@
 ## BlockNote Mendix Pluggable Widget
 World Map Mendix Pluggable Widget based on [https://yanivam.github.io/react-svg-worldmap/](https://yanivam.github.io/react-svg-worldmap/) that allows you to draw contries on a world map.
 
-<img alt="Mendix Pluggable Widget World Map Logo" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/src/WorldMap.logo" width="65px"/>
+<img alt="Mendix Pluggable Widget World Map Logo" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/src/WorldMap.logo.png" width="65px"/>
 
 <!-- ## Features
 Mendix pluggable widget where you can simply add an editor to your web application.
