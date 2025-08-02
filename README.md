@@ -32,3 +32,7 @@ changing the data, as to keep the demo working for every user.
 
 ![Demo (1)](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demo.gif)
 ![Demo (2)](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demoInt.png)
+
+## Issues, suggestions and feature requests
+
+Let us know if you find any issues or if you have any feature requests.
