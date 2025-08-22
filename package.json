@@ -1,7 +1,7 @@
 {
     "name": "worldmap",
     "widgetName": "WorldMap",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "World Map SVG Mendix Pluggable Widget based on https://yanivam.github.io/react-svg-worldmap",
     "copyright": "JL 2025",
     "author": "JL",
