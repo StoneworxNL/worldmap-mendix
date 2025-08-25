@@ -18,15 +18,15 @@ contries on a world map.
 
 ## On Click
 
-If you want to handle clicks on the map:
+If you want to handle clicks on the map, make sure you create an "onClick" action and set it in the Widget's General
+settings. To know which country was clicked:
 
-1. Make sure you create an "onClick" action and set it in the Widget's General settings.
-2. To know which country was clicked: 2.1. Wrap the World Map widget inside a dataview. 2.2. Add the "Clicked Country"
-   attribute to know the ISO Code of the clicked country. 2.3. Add the object in context as an input of the action
-   created in 1.
+1. Wrap the World Map widget inside a dataview.
+2. Add the "Clicked Country" attribute to know the ISO Code of the clicked country.
+3. Add the object in context as an input of the action created in 1.
 
-![OnClick Configurations](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demoAction.png)
-![Microflow Example](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/microflow.png)
+<img alt="OnClick Configurations" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demoAction.png" width="400px"/>
+<img alt="Microflow Example" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/microflow.png" width="400px"/>
 
 ## Demo project
 
