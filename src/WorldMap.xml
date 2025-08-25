@@ -51,17 +51,21 @@
             </property>
             <property key="color" type="string">
                 <caption>Color</caption>
-                <description>
-                    Color for highlighted countries. A standard color string. E.g. "red" or "#ff0000".
-                </description>
+                <description>Color for highlighted countries (e.g. "red" or "#ff0000").</description>
             </property>
-            <!-- <property key="actionWithVariable" type="action">
-                <caption>On click</caption>
-                <description>Action to be performed when button is clicked</description>
-                <actionVariables>
-                    <actionVariable key="random" type="Decimal" caption="Random number between 0 and 1" />
-                </actionVariables>
-            </property> -->
+
+            <!-- Action property -->
+            <property key="onClickAction" type="action">
+                <caption>On Click</caption>
+                <description>Action to be executed when a country is clicked.</description>
+            </property>
+            <property key="countryClickedISO" type="attribute" required="false">
+                <caption>Clicked Country</caption>
+                <description>(ISO Code)</description>
+                <attributeTypes>
+                    <attributeType name="String" />
+                </attributeTypes>
+            </property>
         </propertyGroup>
     </properties>
 </widget>
