@@ -25,8 +25,8 @@ settings. To know which country was clicked:
 2. Add the "Clicked Country" attribute to know the ISO Code of the clicked country.
 3. Add the object in context as an input of the action created in 1.
 
-<img alt="OnClick Configurations" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demoAction.png" width="400px"/>
-<img alt="Microflow Example" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/microflow.png" width="400px"/>
+<img alt="OnClick Configurations" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demoAction.png" width="550px"/>
+<img alt="Microflow Example" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/microflow.png" width="550px"/>
 
 ## Demo project
 
