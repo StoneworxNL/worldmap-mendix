@@ -16,6 +16,18 @@ contries on a world map.
 
 ![Configuration in Studio Pro](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/config.png)
 
+## On Click
+
+If you want to handle clicks on the map:
+
+1. Make sure you create an "onClick" action and set it in the Widget's General settings.
+2. To know which country was clicked: 2.1. Wrap the World Map widget inside a dataview. 2.2. Add the "Clicked Country"
+   attribute to know the ISO Code of the clicked country. 2.3. Add the object in context as an input of the action
+   created in 1.
+
+![OnClick Configurations](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demoAction.png)
+![Microflow Example](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/microflow.png)
+
 ## Demo project
 
 -   [Mendix app running on the cloud](https://world-map-sandbox.mxapps.io/index.html?profile=Responsive)
@@ -27,6 +39,8 @@ changing the data, as to keep the demo working for every user.
 ### Contries' Configuration Example
 
 ![Countries Configuration](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/configcountries.png)
+
+![]
 
 ### Demo
 
