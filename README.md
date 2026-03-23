@@ -16,17 +16,10 @@ contries on a world map.
 
 ![Configuration in Studio Pro](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/config.png)
 
-## On Click
+## On Click Action
 
-If you want to handle clicks on the map, make sure you create an "onClick" action and set it in the Widget's General
-settings. To know which country was clicked:
-
-1. Wrap the World Map widget inside a dataview.
-2. Add the "Clicked Country" attribute to know the ISO Code of the clicked country.
-3. Add the object in context as an input of the action created in 1.
-
-<img alt="OnClick Configurations" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demoAction.png" width="550px"/>
-<img alt="Microflow Example" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/microflow.png" width="550px"/>
+If you want to handle clicks on the map, make sure you create an "onClick" action with a String attribute to receive the
+clicked country's ISO Code and set it in the Widget's General settings. In the widget set the input to $clickedIsoCode.
 
 ## Demo project
 
