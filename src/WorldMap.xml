@@ -61,7 +61,7 @@
             </property>
             <property key="countryClickedISO" type="attribute" required="false">
                 <caption>Clicked Country</caption>
-                <description>(ISO Code)</description>
+                <description>ISO Code String</description>
                 <attributeTypes>
                     <attributeType name="String" />
                 </attributeTypes>
