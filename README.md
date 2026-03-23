@@ -33,8 +33,6 @@ changing the data, as to keep the demo working for every user.
 
 ![Countries Configuration](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/configcountries.png)
 
-![]
-
 ### Demo
 
 ![Demo (1)](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/demo.gif)
