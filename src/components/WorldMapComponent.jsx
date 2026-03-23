@@ -1,15 +1,7 @@
 import { createElement, useState, useEffect, useCallback } from "react";
 import WorldMap from "react-svg-worldmap";
 
-export function WorldMapComponent({
-    countryList,
-    countryISO,
-    countryValue,
-    sizeEnum,
-    color,
-    onClickAction,
-    countryClickedISO
-}) {
+export function WorldMapComponent({ countryList, countryISO, countryValue, sizeEnum, color, onClickAction }) {
     const [countries, setCountries] = useState([]);
 
     useEffect(() => {
@@ -31,17 +23,9 @@ export function WorldMapComponent({
                 console.warn("onClickAction cannot be executed.");
                 return;
             }
-
-            if (countryClickedISO) {
-                if (countryClickedISO.status !== "available") {
-                    console.warn("countryClickedISO is not available.");
-                    return;
-                } else countryClickedISO.setValue(countryCode);
-            }
-
-            onClickAction.execute();
+            onClickAction.execute({ clickedIsoCode: countryCode });
         },
-        [onClickAction, countryClickedISO]
+        [onClickAction]
     );
 
     return (

@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { WorldMapComponent } from "./components/WorldMapComponent";
 // import "./ui/WorldMap.css";
 
-export function WorldMap({ countryList, countryISO, countryValue, sizeEnum, color, onClickAction, countryClickedISO }) {
+export function WorldMap({ countryList, countryISO, countryValue, sizeEnum, color, onClickAction }) {
     return (
         <WorldMapComponent
             countryList={countryList}
@@ -11,7 +11,6 @@ export function WorldMap({ countryList, countryISO, countryValue, sizeEnum, colo
             sizeEnum={sizeEnum}
             color={color}
             onClickAction={onClickAction}
-            countryClickedISO={countryClickedISO}
         />
     );
 }

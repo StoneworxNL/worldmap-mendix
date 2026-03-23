@@ -58,13 +58,9 @@
             <property key="onClickAction" type="action">
                 <caption>On Click</caption>
                 <description>Action to be executed when a country is clicked.</description>
-            </property>
-            <property key="countryClickedISO" type="attribute" required="false">
-                <caption>Clicked Country</caption>
-                <description>ISO Code String</description>
-                <attributeTypes>
-                    <attributeType name="String" />
-                </attributeTypes>
+                <actionVariables>
+                    <actionVariable key="clickedIsoCode" type="String" caption="Clicked Country ISO Code" />
+                </actionVariables>
             </property>
         </propertyGroup>
     </properties>
