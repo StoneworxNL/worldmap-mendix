@@ -37,6 +37,10 @@
                     <attributeType name="Decimal" />
                 </attributeTypes>
             </property>
+            <property key="valueSuffix" type="string" required="false" defaultValue="people">
+                <caption>Value suffix</caption>
+                <description>Text shown after the value in the country tooltip (e.g. "people"). Leave empty for no suffix.</description>
+            </property>
             <property key="sizeEnum" type="enumeration" defaultValue="responsive">
                 <caption>Size</caption>
                 <description>Width of the map.</description>

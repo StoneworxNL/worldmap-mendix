@@ -13,6 +13,8 @@ contries on a world map.
 2. Add the 'World Map' widget to a page.
 3. Set up the Countries' datasource, as well as the attributes you'd like to use for the ISO Code and Value.
 4. Set the size and color.
+5. Optionally, set the value suffix shown after the value in the country tooltip (defaults to "people"; leave empty for
+   no suffix).
 
 ![Configuration in Studio Pro](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/config.png)
 

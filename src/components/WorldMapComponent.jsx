@@ -1,7 +1,15 @@
-import { createElement, useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import WorldMap from "react-svg-worldmap";
 
-export function WorldMapComponent({ countryList, countryISO, countryValue, sizeEnum, color, onClickAction }) {
+export function WorldMapComponent({
+    countryList,
+    countryISO,
+    countryValue,
+    valueSuffix,
+    sizeEnum,
+    color,
+    onClickAction
+}) {
     const [countries, setCountries] = useState([]);
 
     useEffect(() => {
@@ -32,7 +40,7 @@ export function WorldMapComponent({ countryList, countryISO, countryValue, sizeE
         <div className="App">
             <WorldMap
                 color={color}
-                value-suffix="people"
+                valueSuffix={valueSuffix}
                 size={sizeEnum}
                 data={countries}
                 onClickFunction={clickAction}
