@@ -1,5 +1,5 @@
+import "./ui/WorldMap.css";
 import { WorldMapComponent } from "./components/WorldMapComponent";
-// import "./ui/WorldMap.css";
 
 export function WorldMap({ countryList, countryISO, countryValue, valueSuffix, sizeEnum, color, onClickAction }) {
     return (
