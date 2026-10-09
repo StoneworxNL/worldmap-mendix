@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import WorldMap from "react-svg-worldmap";
 
 // Mendix returns Integer/Long/Decimal values as Big.js objects. Plain numbers let the map
@@ -14,18 +14,15 @@ export function WorldMapComponent({
     color,
     onClickAction
 }) {
-    const [countries, setCountries] = useState([]);
-
-    useEffect(() => {
-        if (countryList && countryList.status === "available") {
-            const formattedCountries = countryList.items.map(country => ({
+    // While the list reloads, Mendix keeps the previous items, so the map doesn't flash empty.
+    const countries = useMemo(
+        () =>
+            (countryList?.items ?? []).map(country => ({
                 country: countryISO.get(country).value,
                 value: toMapValue(countryValue.get(country).value)
-            }));
-            console.log();
-            setCountries(formattedCountries);
-        }
-    }, [countryList]);
+            })),
+        [countryList, countryISO, countryValue]
+    );
 
     // Format numbers in the app's language (set on <html lang> by Mendix), not the browser's.
     const tooltipText = useCallback(({ countryName, countryValue: value, prefix, suffix }) => {
