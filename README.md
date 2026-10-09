@@ -13,8 +13,8 @@ countries on a world map.
 2. Add the 'World Map' widget to a page.
 3. Set up the Countries' datasource, as well as the attributes you'd like to use for the ISO Code and Value.
 4. Set the size and color.
-5. Optionally, set a value suffix to show after the value in the country tooltip, e.g. "people" (empty by default). It is
-   a translatable text, so it can differ per language.
+5. Optionally, set a value suffix to show after the value in the country tooltip, e.g. "people" (empty by default). It
+   is a translatable text, so it can differ per language.
 
 Tooltip values are formatted by Mendix in the user's language, with thousands separators. Countries without an ISO code
 or value are not shown. Long tooltips may extend beyond the map; a parent container with `overflow: hidden` will clip
@@ -33,7 +33,8 @@ check that a matching Country object exists) before using it.
 ## Demo project
 
 -   [Mendix app running on the cloud](https://world-map-sandbox.mxapps.io/index.html?profile=Responsive)
--   [Mendix demo module (.mpk)](https://github.com/StoneworxNL/worldmap-mendix/blob/main/demo/WorldMap.mpk)
+-   [Mendix demo module (.mpk)](https://github.com/StoneworxNL/worldmap-mendix/blob/main/demo/WorldMap.mpk) (requires
+    Studio Pro 11.12.5 or later)
 
 You can check the demo [here](https://world-map-sandbox.mxapps.io/index.html?profile=Responsive). Please be mindful of
 changing the data, as to keep the demo working for every user.

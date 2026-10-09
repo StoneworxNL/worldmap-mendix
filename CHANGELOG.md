@@ -16,6 +16,8 @@ All notable changes to the World Map widget are documented in this file.
 -   Tooltip values are formatted by Mendix in the user's language, with thousands separators.
 -   The widget no longer needs to be placed in a data view.
 -   Updated react-svg-worldmap to 2.1.0 and @mendix/pluggable-widgets-tools to 11.12.0.
+-   Demo module re-exported with this version of the widget. It now requires Studio Pro 11.12.5 or later. Each demo map
+    has its own value suffix, with English and Dutch texts.
 
 ### Fixed
 
