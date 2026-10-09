@@ -2,7 +2,7 @@
 <widget
     id="stoneworx.worldmap.WorldMap"
     pluginWidget="true"
-    needsEntityContext="true"
+    needsEntityContext="false"
     offlineCapable="true"
     supportedPlatform="Web"
     xmlns="http://www.mendix.com/widget/1.0/"
@@ -37,7 +37,7 @@
                     <attributeType name="Decimal" />
                 </attributeTypes>
             </property>
-            <property key="valueSuffix" type="string" required="false" defaultValue="people">
+            <property key="valueSuffix" type="textTemplate" required="false">
                 <caption>Value suffix</caption>
                 <description>Text shown after the value in the country tooltip (e.g. "people"). Leave empty for no suffix.</description>
             </property>

@@ -2,7 +2,7 @@
 
 World Map Mendix Pluggable Widget based on
 [https://yanivam.github.io/react-svg-worldmap/](https://yanivam.github.io/react-svg-worldmap/) that allows you to draw
-contries on a world map.
+countries on a world map.
 
 <img alt="Mendix Pluggable Widget World Map Logo" src="https://github.com/StoneworxNL/worldmap-mendix/blob/main/src/WorldMap.icon.png" width="65px"/>
 
@@ -13,8 +13,12 @@ contries on a world map.
 2. Add the 'World Map' widget to a page.
 3. Set up the Countries' datasource, as well as the attributes you'd like to use for the ISO Code and Value.
 4. Set the size and color.
-5. Optionally, set the value suffix shown after the value in the country tooltip (defaults to "people"; leave empty for
-   no suffix).
+5. Optionally, set a value suffix to show after the value in the country tooltip, e.g. "people" (empty by default). It is
+   a translatable text, so it can differ per language.
+
+Tooltip values are formatted by Mendix in the user's language, with thousands separators. Countries without an ISO code
+or value are not shown. Long tooltips may extend beyond the map; a parent container with `overflow: hidden` will clip
+them.
 
 ![Configuration in Studio Pro](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/config.png)
 
@@ -22,6 +26,9 @@ contries on a world map.
 
 If you want to handle clicks on the map, make sure you create an "onClick" action with a String attribute to receive the
 clicked country's ISO Code and set it in the Widget's General settings. In the widget set the input to $clickedIsoCode.
+
+The ISO code comes from the browser, so treat it like any other user input: validate it in your microflow (for example,
+check that a matching Country object exists) before using it.
 
 ## Demo project
 
@@ -31,7 +38,7 @@ clicked country's ISO Code and set it in the Widget's General settings. In the w
 You can check the demo [here](https://world-map-sandbox.mxapps.io/index.html?profile=Responsive). Please be mindful of
 changing the data, as to keep the demo working for every user.
 
-### Contries' Configuration Example
+### Countries' Configuration Example
 
 ![Countries Configuration](https://github.com/StoneworxNL/worldmap-mendix/blob/main/images/configcountries.png)
 
