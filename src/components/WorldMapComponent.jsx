@@ -1,19 +1,51 @@
-import { createElement, useState, useEffect, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import WorldMap from "react-svg-worldmap";
+import classNames from "classnames";
 
-export function WorldMapComponent({ countryList, countryISO, countryValue, sizeEnum, color, onClickAction }) {
-    const [countries, setCountries] = useState([]);
+// Mendix returns Integer/Long/Decimal values as Big.js objects. The map needs plain numbers to scale its shading.
+const toMapValue = value => (typeof value?.toNumber === "function" ? value.toNumber() : value);
 
-    useEffect(() => {
-        if (countryList && countryList.status === "available") {
-            const formattedCountries = countryList.items.map(country => ({
-                country: countryISO.get(country).value,
-                value: countryValue.get(country).value
-            }));
-            console.log();
-            setCountries(formattedCountries);
+export function WorldMapComponent({
+    className,
+    style,
+    countryList,
+    countryISO,
+    countryValue,
+    valueSuffix,
+    sizeEnum,
+    color,
+    onClickAction
+}) {
+    // Mendix's own number formatter (user's locale), with thousands separators, which Mendix leaves off by default.
+    const numberFormatter = useMemo(() => {
+        const formatter = countryValue?.formatter;
+        return formatter?.type === "number"
+            ? formatter.withConfig({ ...formatter.config, groupDigits: true })
+            : undefined;
+    }, [countryValue]);
+
+    // While the list reloads, Mendix keeps the previous items, so the map doesn't flash empty.
+    // Countries without an ISO code or value are skipped: the map can't draw them and they would skew the shading.
+    const { countries, labels } = useMemo(() => {
+        const data = [];
+        const formattedValues = {};
+        for (const item of countryList?.items ?? []) {
+            const iso = countryISO.get(item).value?.trim().toUpperCase();
+            const attribute = countryValue.get(item);
+            if (!iso || attribute.value == null || attribute.value === "") {
+                continue;
+            }
+            data.push({ country: iso, value: toMapValue(attribute.value) });
+            formattedValues[iso] = numberFormatter ? numberFormatter.format(attribute.value) : attribute.displayValue;
         }
-    }, [countryList]);
+        return { countries: data, labels: formattedValues };
+    }, [countryList, countryISO, countryValue, numberFormatter]);
+
+    const tooltipText = useCallback(
+        ({ countryCode, countryName, countryValue: value, prefix, suffix }) =>
+            [countryName, prefix, labels[countryCode] ?? String(value), suffix].filter(Boolean).join(" "),
+        [labels]
+    );
 
     const clickAction = useCallback(
         ({ countryCode }) => {
@@ -28,14 +60,16 @@ export function WorldMapComponent({ countryList, countryISO, countryValue, sizeE
         [onClickAction]
     );
 
+    // An empty Color would become fill: "" (black countries); undefined lets the library use its default color.
     return (
-        <div className="App">
+        <div className={classNames("widget-worldmap", className)} style={style}>
             <WorldMap
-                color={color}
-                value-suffix="people"
+                color={color || undefined}
+                valueSuffix={valueSuffix}
                 size={sizeEnum}
                 data={countries}
                 onClickFunction={clickAction}
+                tooltipTextFunction={tooltipText}
             />
         </div>
     );

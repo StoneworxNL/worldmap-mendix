@@ -1,12 +1,12 @@
 {
   "name": "worldmap",
   "widgetName": "WorldMap",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "World Map SVG Mendix Pluggable Widget based on https://yanivam.github.io/react-svg-worldmap",
   "copyright": "JL 2025",
   "author": "JL",
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
   "license": "MIT",
   "config": {
@@ -25,11 +25,11 @@
     "release": "pluggable-widgets-tools release:web"
   },
   "devDependencies": {
-    "@mendix/pluggable-widgets-tools": "^11.8.1"
+    "@mendix/pluggable-widgets-tools": "^11.12.0"
   },
   "dependencies": {
     "classnames": "^2.5.1",
-    "react-svg-worldmap": "^2.0.2"
+    "react-svg-worldmap": "^2.1.0"
   },
   "resolutions": {
     "react": "19.0.0",
