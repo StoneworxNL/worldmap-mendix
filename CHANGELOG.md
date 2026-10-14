@@ -4,9 +4,10 @@ All notable changes to the World Map widget are documented in this file.
 
 ## [2.2.0] - 2026-10-14
 
-### Upgrading from 2.1.0
+### Upgrading from 2.1.x
 
--   Requires Mendix 10.21 or later (On Click uses action variables). Tested with Mendix 11.12.5 only.
+-   Requires Mendix 10.21 or later, as 2.1.1 already did (On Click uses action variables). Tested with Mendix 11.12.5
+    only.
 -   Existing World Map widgets show "widget definition has changed": right-click the widget and choose Update widget, or
     use App → Update all widgets.
 -   The new Value suffix starts empty, so tooltips look the same as before.
@@ -27,7 +28,7 @@ All notable changes to the World Map widget are documented in this file.
 
 -   Tooltip values are formatted by Mendix in the user's language, with thousands separators.
 -   The widget no longer needs to be placed in a data view.
--   Responsive maps fill the width of their container (see "Upgrading from 2.1.0").
+-   Responsive maps fill the width of their container (see "Upgrading from 2.1.x").
 -   Updated react-svg-worldmap to 2.1.0 and @mendix/pluggable-widgets-tools to 11.12.0.
 -   Demo module re-exported with the release build of this version of the widget. It now requires Studio Pro 11.12.5 or
     later. Each demo map has its own value suffix, with English and Dutch texts. A new scheduled event restores the
