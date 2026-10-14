@@ -1,5 +1,21 @@
 /*
-Place your custom CSS here
+The map library draws its tooltip inside the SVG, so with overflow: hidden long tooltips
+get cut off on small maps (e.g. the 240px "sm" size). Let them overflow.
+Atlas' normalize rule "svg:not(:root) { overflow: hidden }" is loaded after widget styles and
+has the same specificity as ".widget-worldmap svg", so add :not(:root) to outrank it.
+A parent container with overflow: hidden will still clip the tooltip.
 */
-/* .widget-hello-world { */
-/* } */
+.widget-worldmap svg:not(:root) {
+    overflow: visible;
+}
+
+/*
+Until the first mousemove the tooltip is unpositioned (a 0x0 box at the map's top-left), which
+leaves its arrow sticking out above the map. Hide the arrow and text until the box has a size.
+Use visibility, not display: the library measures the text to size the box.
+This selector relies on react-path-tooltip's internal markup: re-check it whenever that library
+(or react-svg-worldmap, which bundles it) is upgraded.
+*/
+.widget-worldmap g[pointer-events="none"] > rect[width="0"] ~ * {
+    visibility: hidden;
+}
