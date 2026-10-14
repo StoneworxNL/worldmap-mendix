@@ -1,9 +1,14 @@
+import WorldMap, { regions } from "react-svg-worldmap";
 import { useCallback, useMemo } from "react";
-import WorldMap from "react-svg-worldmap";
 import classNames from "classnames";
 
 // Mendix returns Integer/Long/Decimal values as Big.js objects. The map needs plain numbers to scale its shading.
 const toMapValue = value => (typeof value?.toNumber === "function" ? value.toNumber() : value);
+
+// The ISO codes the map can draw. Values for other codes would only stretch the shading range.
+const mapIsoCodes = new Set(regions.map(region => region.code));
+
+const isEmpty = value => value == null || (typeof value === "string" && value.trim() === "");
 
 export function WorldMapComponent({
     className,
@@ -25,19 +30,21 @@ export function WorldMapComponent({
     }, [countryValue]);
 
     // While the list reloads, Mendix keeps the previous items, so the map doesn't flash empty.
-    // Countries without an ISO code or value are skipped: the map can't draw them and they would skew the shading.
+    // Items without a value or with an ISO code the map doesn't know are skipped: they can't be drawn and would skew
+    // the shading. If an ISO code occurs more than once, the last item with a value wins.
     const { countries, labels } = useMemo(() => {
-        const data = [];
+        const valuesByIso = new Map();
         const formattedValues = {};
         for (const item of countryList?.items ?? []) {
             const iso = countryISO.get(item).value?.trim().toUpperCase();
             const attribute = countryValue.get(item);
-            if (!iso || attribute.value == null || attribute.value === "") {
+            if (!mapIsoCodes.has(iso) || isEmpty(attribute.value)) {
                 continue;
             }
-            data.push({ country: iso, value: toMapValue(attribute.value) });
+            valuesByIso.set(iso, toMapValue(attribute.value));
             formattedValues[iso] = numberFormatter ? numberFormatter.format(attribute.value) : attribute.displayValue;
         }
+        const data = Array.from(valuesByIso, ([country, value]) => ({ country, value }));
         return { countries: data, labels: formattedValues };
     }, [countryList, countryISO, countryValue, numberFormatter]);
 
