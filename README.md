@@ -8,7 +8,7 @@ countries on a world map.
 
 ![World Map demo: tooltips, On Click and the countries data](images/demo.gif)
 
-[Watch the demo as a video (MP4, 33 s)](images/demo.mp4) · [Try the live demo](https://world-map-sandbox.mxapps.io/)
+[Watch the demo as a video (MP4, 41 s)](images/demo.mp4) · [Try the live demo](https://world-map-sandbox.mxapps.io/)
 
 ## Features
 
