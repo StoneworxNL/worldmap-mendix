@@ -8,7 +8,8 @@ countries on a world map.
 
 ![World Map demo: tooltips, On Click and the countries data](images/demo.gif)
 
-[Watch the demo as a video (MP4, 41 s)](images/demo.mp4) · [Try the live demo](https://world-map-sandbox.mxapps.io/)
+[Download the demo as a video (MP4, 41 s)](https://github.com/StoneworxNL/worldmap-mendix/releases/download/v2.2.0/WorldMap-demo.mp4)
+· [Try the live demo](https://world-map-sandbox.mxapps.io/)
 
 ## Features
 
@@ -28,8 +29,9 @@ Mendix 10.21 or later: the On Click action passes the clicked ISO code as an act
 
 ## How To Use
 
-1. Create a database entity to store the Country (ISO Code and Value). Note that the value may be a number (Integer,
-   Long, Decimal) or a string.
+1. Create an entity to store the countries (ISO code and value). It can be a database entity, or a non-persistent one
+   that a microflow or nanoflow data source fills. Note that the value may be a number (Integer, Long, Decimal) or a
+   string.
 2. Add the 'World Map' widget to a page.
 3. Set up the Countries' datasource, as well as the attributes you'd like to use for the ISO Code and Value.
 4. Set the size and color. "Responsive" (the default) fills the width of its container, with a height of 3/4 of the
@@ -44,7 +46,7 @@ Mendix 10.21 or later: the On Click action passes the clicked ISO code as an act
 | Property     | Description                                                                                                                                                                                                                  |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Countries    | The data source with one object per country.                                                                                                                                                                                 |
-| Country ISO  | String attribute with the country's two-letter ISO 3166-1 code, e.g. "PT". Case and surrounding spaces are ignored.                                                                                                         |
+| Country ISO  | String attribute with the country's two-letter ISO 3166-1 code, e.g. "PT". Case and surrounding spaces are ignored. Two regions use other codes; see [Tooltips and data](#tooltips-and-data).                            |
 | Value        | Integer, Long, Decimal or String attribute. Numbers set how strongly the country is colored; text is shown in the tooltip.                                                                                                   |
 | Value suffix | Optional, translatable text shown after the value in the tooltip, e.g. "people". Empty by default.                                                                                                                          |
 | Size         | Responsive (Auto), the default: the full width of the container, with a height of 3/4 of the width. Or a fixed width: sm (240px), md (336px), lg (480px), xl (640px) or xxl (1200px), which shrinks to fit a smaller container. |
@@ -57,10 +59,14 @@ Mendix 10.21 or later: the On Click action passes the clicked ISO code as an act
 A country's tooltip shows its name, its value and the value suffix, e.g. "Brazil 216,400,000 people". Values are
 formatted by Mendix in the user's language, with thousands separators.
 
-Objects without a value, or with an ISO code the map doesn't know (it draws 175 countries and territories, each with its
-two-letter ISO 3166-1 code, e.g. "PT"), are not shown. If several objects have the same ISO code (ignoring case and
-spaces), the last one with a value is used. Long tooltips may extend beyond the map; a parent container with
-`overflow: hidden` will clip them.
+The map draws 175 countries and territories. 173 of them use their two-letter ISO 3166-1 code, e.g. "PT". The other two
+use three-letter codes: Northern Cyprus is `CYP` and Somaliland is `SOM`. Those happen to be the official three-letter
+codes of Cyprus and Somalia, so if your data uses three-letter codes, `CYP` and `SOM` color Northern Cyprus and
+Somaliland instead of being skipped, and clicking either region passes `CYP` or `SOM` as `$clickedIsoCode`.
+
+Objects without a value, or with an ISO code the map doesn't know (e.g. "PRT"), are not shown. If several objects have
+the same ISO code (ignoring case and spaces), the last one with a value is used. Long tooltips may extend beyond the
+map; a parent container with `overflow: hidden` will clip them.
 
 ## On Click Action
 
@@ -77,6 +83,7 @@ check that a matching Country object exists) before using it.
 ## Studio Pro preview
 
 In Design mode, Studio Pro draws the map with sample countries, using the configured size, color and value suffix.
+The preview always uses sample numbers, so even a map with a String value shows graded shading in Studio Pro.
 Structure mode shows Studio Pro's default widget box.
 
 ![The design-mode preview in Studio Pro](images/preview.png)
