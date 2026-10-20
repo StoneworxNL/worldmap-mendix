@@ -113,7 +113,7 @@ The cloud demo is public, so please be mindful when changing its data, to keep i
 
 ## Development
 
-Building the widget needs Node 22.18 or later.
+Building the widget needs Node 22, version 22.18 or later.
 
 -   `npm run lint`: checks formatting and code style.
 -   `npm test`: runs the unit tests.

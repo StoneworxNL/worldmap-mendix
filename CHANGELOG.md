@@ -8,15 +8,16 @@ All notable changes to the World Map widget are documented in this file.
 
 -   Updated react-svg-worldmap to 2.3.0 and @mendix/pluggable-widgets-tools to 11.15.0. The map looks and works the
     same: the library's new features (a disputed-territories overlay and the Equal Earth projection) are opt-in, and the
-    widget doesn't use them.
--   Requires Mendix 11.12.5 or later, as 2.2.0 does. Building the widget now needs Node 22.18 or later.
+    widget doesn't use them. The library now always includes its disputed-territory shapes, so the widget's JavaScript
+    is about 28 KB (15%) larger.
+-   Requires Mendix 11.12.5 or later, as 2.2.0 does. Building the widget now needs Node 22, version 22.18 or later.
 
 ## [2.2.0] - 2026-10-14
 
 ### Upgrading from 2.1.x
 
 -   **Requires Mendix 11.12.5 or later**, the version this release is built and tested with. 2.1.1 and 2.1.2 required
-    Mendix 10.21; apps on an earlier Mendix version can keep using 2.1.2.
+    Mendix 10.21; apps on Mendix 10.21 to 11.12.4 can keep using 2.1.2.
 -   Existing World Map widgets show "widget definition has changed": right-click the widget and choose Update widget, or
     use App → Update all widgets.
 -   The new Value suffix starts empty, so tooltips look the same as before.
