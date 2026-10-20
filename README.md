@@ -87,21 +87,16 @@ shows Studio Pro's default widget box.
 
 ![The design-mode preview in Studio Pro](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/preview.png)
 
-## Demo project
+## Live demo
 
--   [Mendix app running on the cloud](https://world-map-sandbox.mxapps.io/)
--   [Mendix demo module (.mpk)](https://github.com/StoneworxNL/worldmap-mendix/raw/main/demo/WorldMap.mpk) (requires
-    Studio Pro 11.12.5 or later)
+[Try the World Map in a Mendix app running on the cloud](https://world-map-sandbox.mxapps.io/).
 
 The demo shows four maps, one per value type: Integer (Responsive), String (240px), Long (336px) and Decimal (1200px),
 each with its own value suffix in English and Dutch. Clicking a country on the first map runs a nanoflow that shows the
-clicked ISO code. The Configure Countries page holds the data behind the maps.
+clicked ISO code. The Configure Countries page holds the data behind the maps. Its "Reset demo data" button, and a
+scheduled event every day at 03:00 UTC, restore the sample data.
 
-The demo module includes a "Reset demo data" button and a scheduled event, `SE_Country_ResetDemoData`, that replaces all
-demo countries with the sample data every day at 03:00 UTC. Scheduled events only run where they're enabled for the
-environment; delete or disable the event if you don't want the daily reset.
-
-The cloud demo is public, so please be mindful when changing its data, to keep it working for everyone.
+The demo is public, so please be mindful when changing its data, to keep it working for everyone.
 
 ### Countries' Configuration Example
 
@@ -118,9 +113,8 @@ Building the widget needs Node 22, version 22.18 or later.
 -   `npm run lint`: checks formatting and code style.
 -   `npm test`: runs the unit tests.
 -   `npm run build`: development build in `dist/<version>/`, also copied to the Mendix app set in `config.projectPath`.
--   `npm run release`: production build in `dist/<version>/`. Use this one for the Marketplace and for the demo module.
-    It is not copied to the Mendix app: copy `dist/<version>/stoneworx.WorldMap.mpk` to the app's `widgets` folder
-    yourself before exporting the demo module.
+-   `npm run release`: production build in `dist/<version>/`. Use this one for the Marketplace. It is not copied to the
+    Mendix app: to try it, copy `dist/<version>/stoneworx.WorldMap.mpk` to the app's `widgets` folder yourself.
 
 ## Issues, suggestions and feature requests
 
