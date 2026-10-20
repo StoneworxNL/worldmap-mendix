@@ -102,7 +102,7 @@ The demo is public, so please be mindful when changing its data, to keep it work
 
 ![The Configure Countries page with a country's edit dialog](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/configcountries.png)
 
-### Demo
+### Responsive map
 
 ![The responsive map with a tooltip](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/demoInt.png)
 
