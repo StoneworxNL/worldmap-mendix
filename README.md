@@ -24,8 +24,7 @@ countries on a world map.
 
 ## Requirements
 
-Mendix 10.21 or later: the On Click action passes the clicked ISO code as an action variable, which Mendix added in
-10.21. The widget is built with the Mendix 11 widget tools and has been tested with Mendix 11.12.5 only.
+Mendix 11.12.5 or later. The widget is built with the Mendix 11.12 widget tools and tested with Mendix 11.12.5.
 
 ## How To Use
 

@@ -6,8 +6,8 @@ All notable changes to the World Map widget are documented in this file.
 
 ### Upgrading from 2.1.x
 
--   Requires Mendix 10.21 or later, as 2.1.1 already did (On Click uses action variables). Tested with Mendix 11.12.5
-    only.
+-   **Requires Mendix 11.12.5 or later**, the version this release is built and tested with. 2.1.1 and 2.1.2 required
+    Mendix 10.21; apps on an earlier Mendix version can keep using 2.1.2.
 -   Existing World Map widgets show "widget definition has changed": right-click the widget and choose Update widget, or
     use App → Update all widgets.
 -   The new Value suffix starts empty, so tooltips look the same as before.
