@@ -12,6 +12,11 @@ All notable changes to the World Map widget are documented in this file.
     is about 28 KB (15%) larger.
 -   Requires Mendix 11.12.5 or later, as 2.2.0 does. Building the widget now needs Node 22, version 22.18 or later.
 
+### Removed
+
+-   The demo module (`demo/WorldMap.mpk`) is no longer in the repository. The
+    [live demo](https://world-map-sandbox.mxapps.io/) shows the same maps.
+
 ## [2.2.0] - 2026-10-14
 
 ### Upgrading from 2.1.x
