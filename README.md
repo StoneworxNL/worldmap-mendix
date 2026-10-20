@@ -4,9 +4,9 @@ World Map Mendix Pluggable Widget based on
 [https://yanivam.github.io/react-svg-worldmap/](https://yanivam.github.io/react-svg-worldmap/) that allows you to draw
 countries on a world map.
 
-<img alt="Mendix Pluggable Widget World Map Logo" src="src/WorldMap.icon.png" width="65px"/>
+<img alt="Mendix Pluggable Widget World Map Logo" src="https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/src/WorldMap.icon.png" width="65px"/>
 
-![World Map demo: tooltips, On Click and the countries data](images/demo.gif)
+![World Map demo: tooltips, On Click and the countries data](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/demo.gif)
 
 [Download the demo as a video (MP4, 41 s)](https://github.com/StoneworxNL/worldmap-mendix/releases/download/v2.2.0/WorldMap-demo.mp4)
 · [Try the live demo](https://world-map-sandbox.mxapps.io/)
@@ -24,7 +24,7 @@ countries on a world map.
 
 ## Requirements
 
-Mendix 11.12.5 or later. The widget is built with the Mendix 11.12 widget tools and tested with Mendix 11.12.5.
+Mendix 11.12.5 or later. The widget is built with the Mendix 11.15 widget tools and tested with Mendix 11.12.5.
 
 ## How To Use
 
@@ -38,20 +38,20 @@ Mendix 11.12.5 or later. The widget is built with the Mendix 11.12 widget tools 
 5. Optionally, set a value suffix to show after the value in the country tooltip, e.g. "people" (empty by default). It
    is a translatable text, so it can differ per language.
 
-![The World Map properties in Studio Pro](images/config.png)
+![The World Map properties in Studio Pro](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/config.png)
 
 ## Properties
 
-| Property     | Description                                                                                                                                                                                                                  |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Countries    | The data source with one object per country.                                                                                                                                                                                 |
-| Country ISO  | String attribute with the country's two-letter ISO 3166-1 code, e.g. "PT". Case and surrounding spaces are ignored. Two regions use other codes; see [Tooltips and data](#tooltips-and-data).                            |
-| Value        | Integer, Long, Decimal or String attribute. Numbers set how strongly the country is colored; text is shown in the tooltip.                                                                                                   |
-| Value suffix | Optional, translatable text shown after the value in the tooltip, e.g. "people". Empty by default.                                                                                                                          |
+| Property     | Description                                                                                                                                                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Countries    | The data source with one object per country.                                                                                                                                                                                    |
+| Country ISO  | String attribute with the country's two-letter ISO 3166-1 code, e.g. "PT". Case and surrounding spaces are ignored. Two regions use other codes; see "Tooltips and data" below.                                                 |
+| Value        | Integer, Long, Decimal or String attribute. Numbers set how strongly the country is colored; text is shown in the tooltip.                                                                                                      |
+| Value suffix | Optional, translatable text shown after the value in the tooltip, e.g. "people". Empty by default.                                                                                                                              |
 | Size         | Responsive (Auto), the default: the full width of the container, with a height of 3/4 of the width. Or a fixed width: sm (240px), md (336px), lg (480px), xl (640px) or xxl (1200px), which shrinks to fit a smaller container. |
-| Color        | Color of highlighted countries, e.g. "red" or "#0f828c". If left empty, the map uses light gray (`#dddddd`).                                                                                                                |
-| On Click     | Optional action to run when a country is clicked. The clicked country's ISO code is available to it as the `$clickedIsoCode` variable.                                                                                       |
-| Class, Style | The Common tab's Class and Style properties are applied to the map's root element.                                                                                                                                         |
+| Color        | Color of highlighted countries, e.g. "red" or "#0f828c". If left empty, the map uses light gray (`#dddddd`).                                                                                                                    |
+| On Click     | Optional action to run when a country is clicked. The clicked country's ISO code is available to it as the `$clickedIsoCode` variable.                                                                                          |
+| Class, Style | The Common tab's Class and Style properties are applied to the map's root element.                                                                                                                                              |
 
 ### Tooltips and data
 
@@ -72,25 +72,26 @@ map; a parent container with `overflow: hidden` will clip them.
 To handle clicks on the map, create a microflow or nanoflow with a String parameter to receive the clicked country's ISO
 code, and select it as the widget's On Click action. In the action's settings, set that parameter to `$clickedIsoCode`.
 
-![The On Click action, passing $clickedIsoCode to a nanoflow parameter](images/onclick-settings.png)
+![The On Click action, passing $clickedIsoCode to a nanoflow parameter](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/onclick-settings.png)
 
-![A nanoflow with a String parameter for the clicked ISO code](images/onclick-nanoflow.png)
+![A nanoflow with a String parameter for the clicked ISO code](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/onclick-nanoflow.png)
 
 The ISO code comes from the browser, so treat it like any other user input: validate it in your microflow (for example,
 check that a matching Country object exists) before using it.
 
 ## Studio Pro preview
 
-In Design mode, Studio Pro draws the map with sample countries, using the configured size, color and value suffix.
-The preview always uses sample numbers, so even a map with a String value shows graded shading in Studio Pro.
-Structure mode shows Studio Pro's default widget box.
+In Design mode, Studio Pro draws the map with sample countries, using the configured size, color and value suffix. The
+preview always uses sample numbers, so even a map with a String value shows graded shading in Studio Pro. Structure mode
+shows Studio Pro's default widget box.
 
-![The design-mode preview in Studio Pro](images/preview.png)
+![The design-mode preview in Studio Pro](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/preview.png)
 
 ## Demo project
 
 -   [Mendix app running on the cloud](https://world-map-sandbox.mxapps.io/)
--   [Mendix demo module (.mpk)](demo/WorldMap.mpk) (requires Studio Pro 11.12.5 or later)
+-   [Mendix demo module (.mpk)](https://github.com/StoneworxNL/worldmap-mendix/raw/main/demo/WorldMap.mpk) (requires
+    Studio Pro 11.12.5 or later)
 
 The demo shows four maps, one per value type: Integer (Responsive), String (240px), Long (336px) and Decimal (1200px),
 each with its own value suffix in English and Dutch. Clicking a country on the first map runs a nanoflow that shows the
@@ -104,13 +105,15 @@ The cloud demo is public, so please be mindful when changing its data, to keep i
 
 ### Countries' Configuration Example
 
-![The Configure Countries page with a country's edit dialog](images/configcountries.png)
+![The Configure Countries page with a country's edit dialog](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/configcountries.png)
 
 ### Demo
 
-![The responsive map with a tooltip](images/demoInt.png)
+![The responsive map with a tooltip](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/demoInt.png)
 
 ## Development
+
+Building the widget needs Node 22.18 or later.
 
 -   `npm run lint`: checks formatting and code style.
 -   `npm test`: runs the unit tests.
