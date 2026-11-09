@@ -34,9 +34,15 @@ export function preview({
     pinList,
     pinColor
 }) {
-    const zoom = zoomEnabled ? { showControls: zoomShowControls, showCountryLabels } : false;
+    const zoom = zoomEnabled
+        ? { showControls: zoomShowControls !== false, showCountryLabels: showCountryLabels !== false }
+        : false;
+    // pointer-events: none keeps the map's zoom, pan and wheel handlers from taking over Studio Pro's editor canvas.
     return (
-        <div className={classNames("widget-worldmap", { "widget-worldmap--zoom": zoomEnabled }, className)}>
+        <div
+            className={classNames("widget-worldmap", { "widget-worldmap--zoom": zoomEnabled }, className)}
+            style={{ pointerEvents: "none" }}
+        >
             <WorldMap
                 color={color || undefined}
                 valueSuffix={valueSuffix}

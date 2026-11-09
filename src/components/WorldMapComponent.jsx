@@ -64,7 +64,7 @@ export function WorldMapComponent({
         () =>
             zoomEnabled
                 ? {
-                      maxScale: Math.max(2, zoomMaxScale ?? 8),
+                      maxScale: Math.max(2, zoomMaxScale),
                       showControls: zoomShowControls !== false,
                       showCountryLabels: showCountryLabels !== false
                   }

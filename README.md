@@ -91,6 +91,11 @@ box, so tooltips near its edges can be cut off.
 overlap, the one that comes first in the Pins data source is shown, so sort the data source by importance. Pins don't
 respond to clicks.
 
+On a map without zoom, pin captions near the edge of the map can extend beyond it, like tooltips do.
+
+The zoom buttons' screen-reader labels and the zoom status announcements come from react-svg-worldmap and are in English
+only.
+
 ## On Click Action
 
 To handle clicks on the map, create a microflow or nanoflow with a String parameter to receive the clicked country's ISO
