@@ -19,7 +19,17 @@ export function WorldMapComponent({
     valueSuffix,
     sizeEnum,
     color,
-    onClickAction
+    onClickAction,
+    zoomEnabled,
+    zoomMaxScale,
+    zoomShowControls,
+    showCountryLabels,
+    labelColor,
+    pinList,
+    pinLatitude,
+    pinLongitude,
+    pinCaption,
+    pinColor
 }) {
     // Mendix's own number formatter (user's locale), with thousands separators, which Mendix leaves off by default.
     const numberFormatter = useMemo(() => {
@@ -48,6 +58,36 @@ export function WorldMapComponent({
         return { countries: data, labels: formattedValues };
     }, [countryList, countryISO, countryValue, numberFormatter]);
 
+    // Zoom is opt-in; false keeps the map as it was before zoom existed. The library zooms out no further than the
+    // whole map (1), so a maximum below 2 would leave nothing to zoom.
+    const zoom = useMemo(
+        () =>
+            zoomEnabled
+                ? {
+                      maxScale: Math.max(2, zoomMaxScale ?? 8),
+                      showControls: zoomShowControls !== false,
+                      showCountryLabels: showCountryLabels !== false
+                  }
+                : false,
+        [zoomEnabled, zoomMaxScale, zoomShowControls, showCountryLabels]
+    );
+
+    // Pins without a latitude or longitude are skipped. The library skips coordinates out of range itself and, when
+    // pins overlap, keeps the one that comes first in the list.
+    const pins = useMemo(() => {
+        if (!pinList?.items || !pinLatitude || !pinLongitude) {
+            return undefined;
+        }
+        return pinList.items.flatMap(item => {
+            const latitude = toMapValue(pinLatitude.get(item).value);
+            const longitude = toMapValue(pinLongitude.get(item).value);
+            if (typeof latitude !== "number" || typeof longitude !== "number") {
+                return [];
+            }
+            return [{ id: item.id, coordinates: [longitude, latitude], caption: pinCaption?.get(item).value ?? "" }];
+        });
+    }, [pinList, pinLatitude, pinLongitude, pinCaption]);
+
     const tooltipText = useCallback(
         ({ countryCode, countryName, countryValue: value, prefix, suffix }) =>
             [countryName, prefix, labels[countryCode] ?? String(value), suffix].filter(Boolean).join(" "),
@@ -67,9 +107,9 @@ export function WorldMapComponent({
         [onClickAction]
     );
 
-    // An empty Color would become fill: "" (black countries); undefined lets the library use its default color.
+    // An empty color would become fill: "" (black); undefined lets the library use its default color.
     return (
-        <div className={classNames("widget-worldmap", className)} style={style}>
+        <div className={classNames("widget-worldmap", { "widget-worldmap--zoom": zoom }, className)} style={style}>
             <WorldMap
                 color={color || undefined}
                 valueSuffix={valueSuffix}
@@ -77,6 +117,10 @@ export function WorldMapComponent({
                 data={countries}
                 onClickFunction={clickAction}
                 tooltipTextFunction={tooltipText}
+                zoom={zoom}
+                labelColor={labelColor || undefined}
+                pins={pins}
+                pinColor={pinColor || undefined}
             />
         </div>
     );

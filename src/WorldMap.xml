@@ -39,7 +39,9 @@
             </property>
             <property key="valueSuffix" type="textTemplate" required="false">
                 <caption>Value suffix</caption>
-                <description>Text shown after the value in the country tooltip (e.g. "people"). Leave empty for no suffix.</description>
+                <description>
+                    Text shown after the value in the country tooltip (e.g. "people"). Leave empty for no suffix.
+                </description>
             </property>
             <property key="sizeEnum" type="enumeration" defaultValue="responsive">
                 <caption>Size</caption>
@@ -65,6 +67,75 @@
                 <actionVariables>
                     <actionVariable key="clickedIsoCode" type="String" caption="Clicked Country ISO Code" />
                 </actionVariables>
+            </property>
+        </propertyGroup>
+        <propertyGroup caption="Zoom">
+            <property key="zoomEnabled" type="boolean" defaultValue="false">
+                <caption>Zoom and pan</caption>
+                <description>
+                    Let users zoom and pan the map with the zoom buttons, by dragging, by double-clicking, with the
+                    keyboard and with Ctrl/Cmd + mouse wheel. A plain mouse wheel still scrolls the page.
+                </description>
+            </property>
+            <property key="zoomMaxScale" type="integer" defaultValue="8">
+                <caption>Maximum zoom</caption>
+                <description>How far users can zoom in, as a multiple of the whole map. At least 2.</description>
+            </property>
+            <property key="zoomShowControls" type="boolean" defaultValue="true">
+                <caption>Zoom buttons</caption>
+                <description>
+                    Show the zoom in, zoom out and reset buttons in the bottom-right corner of the map.
+                </description>
+            </property>
+            <property key="showCountryLabels" type="boolean" defaultValue="true">
+                <caption>Country names</caption>
+                <description>
+                    Show the names of countries they fit inside. More names appear as users zoom in.
+                </description>
+            </property>
+            <property key="labelColor" type="string" required="false">
+                <caption>Country name color</caption>
+                <description>
+                    Color of the country names (e.g. "#222222"). Leave empty for the default dark gray.
+                </description>
+            </property>
+        </propertyGroup>
+        <propertyGroup caption="Pins">
+            <property key="pinList" type="datasource" isList="true" required="false">
+                <caption>Pins</caption>
+                <description>
+                    Markers with a caption, drawn at a latitude and longitude, with or without zoom. When pins overlap,
+                    the one that comes first in the list is shown.
+                </description>
+            </property>
+            <property key="pinLatitude" type="attribute" dataSource="pinList" required="false">
+                <caption>Latitude</caption>
+                <description>
+                    Latitude in degrees, from -90 (south) to 90 (north). Pins without a valid latitude and longitude are
+                    skipped.
+                </description>
+                <attributeTypes>
+                    <attributeType name="Decimal" />
+                    <attributeType name="Integer" />
+                    <attributeType name="Long" />
+                </attributeTypes>
+            </property>
+            <property key="pinLongitude" type="attribute" dataSource="pinList" required="false">
+                <caption>Longitude</caption>
+                <description>Longitude in degrees, from -180 (west) to 180 (east).</description>
+                <attributeTypes>
+                    <attributeType name="Decimal" />
+                    <attributeType name="Integer" />
+                    <attributeType name="Long" />
+                </attributeTypes>
+            </property>
+            <property key="pinCaption" type="textTemplate" dataSource="pinList" required="false">
+                <caption>Caption</caption>
+                <description>Text shown next to the pin, e.g. the city name.</description>
+            </property>
+            <property key="pinColor" type="string" required="false">
+                <caption>Pin color</caption>
+                <description>Fill color of the pins (e.g. "#b91c1c"). Leave empty for the default red.</description>
             </property>
         </propertyGroup>
     </properties>

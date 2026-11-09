@@ -19,6 +19,8 @@ countries on a world map.
     optional, translatable suffix such as "people".
 -   A responsive size that fills its container, or fixed widths from 240px to 1200px.
 -   An On Click action that receives the clicked country's ISO code.
+-   Optional zoom and pan, with zoom buttons and country names that appear as you zoom in.
+-   Optional pins: markers with a caption at a latitude and longitude, e.g. offices or cities.
 -   Works anywhere on a page; no data view needed. The widget's Class and Style properties apply to the map.
 -   A design-mode preview in Studio Pro.
 
@@ -37,21 +39,31 @@ Mendix 11.12.5 or later. The widget is built with the Mendix 11.15 widget tools 
    width; the other sizes are fixed widths that shrink to fit a smaller container.
 5. Optionally, set a value suffix to show after the value in the country tooltip, e.g. "people" (empty by default). It
    is a translatable text, so it can differ per language.
+6. Optionally, turn on zoom and pan on the Zoom tab, and add pins on the Pins tab (see "Zoom and pins" below).
 
 ![The World Map properties in Studio Pro](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/config.png)
 
 ## Properties
 
-| Property     | Description                                                                                                                                                                                                                     |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Countries    | The data source with one object per country.                                                                                                                                                                                    |
-| Country ISO  | String attribute with the country's two-letter ISO 3166-1 code, e.g. "PT". Case and surrounding spaces are ignored. Two regions use other codes; see "Tooltips and data" below.                                                 |
-| Value        | Integer, Long, Decimal or String attribute. Numbers set how strongly the country is colored; text is shown in the tooltip.                                                                                                      |
-| Value suffix | Optional, translatable text shown after the value in the tooltip, e.g. "people". Empty by default.                                                                                                                              |
-| Size         | Responsive (Auto), the default: the full width of the container, with a height of 3/4 of the width. Or a fixed width: sm (240px), md (336px), lg (480px), xl (640px) or xxl (1200px), which shrinks to fit a smaller container. |
-| Color        | Color of highlighted countries, e.g. "red" or "#0f828c". If left empty, the map uses light gray (`#dddddd`).                                                                                                                    |
-| On Click     | Optional action to run when a country is clicked. The clicked country's ISO code is available to it as the `$clickedIsoCode` variable.                                                                                          |
-| Class, Style | The Common tab's Class and Style properties are applied to the map's root element.                                                                                                                                              |
+| Property            | Description                                                                                                                                                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Countries           | The data source with one object per country.                                                                                                                                                                                    |
+| Country ISO         | String attribute with the country's two-letter ISO 3166-1 code, e.g. "PT". Case and surrounding spaces are ignored. Two regions use other codes; see "Tooltips and data" below.                                                 |
+| Value               | Integer, Long, Decimal or String attribute. Numbers set how strongly the country is colored; text is shown in the tooltip.                                                                                                      |
+| Value suffix        | Optional, translatable text shown after the value in the tooltip, e.g. "people". Empty by default.                                                                                                                              |
+| Size                | Responsive (Auto), the default: the full width of the container, with a height of 3/4 of the width. Or a fixed width: sm (240px), md (336px), lg (480px), xl (640px) or xxl (1200px), which shrinks to fit a smaller container. |
+| Color               | Color of highlighted countries, e.g. "red" or "#0f828c". If left empty, the map uses light gray (`#dddddd`).                                                                                                                    |
+| On Click            | Optional action to run when a country is clicked. The clicked country's ISO code is available to it as the `$clickedIsoCode` variable.                                                                                          |
+| Zoom and pan        | Zoom tab. Off by default. Lets users zoom and pan the map; see "Zoom and pins" below.                                                                                                                                           |
+| Maximum zoom        | Zoom tab. How far users can zoom in, as a multiple of the whole map. Default 8, at least 2.                                                                                                                                     |
+| Zoom buttons        | Zoom tab. Shows the zoom in, zoom out and reset buttons in the map's bottom-right corner. On by default.                                                                                                                        |
+| Country names       | Zoom tab. Shows the names of countries they fit inside; more appear as users zoom in. On by default.                                                                                                                            |
+| Country name color  | Zoom tab. Color of the country names. If left empty, dark gray (`#222222`).                                                                                                                                                     |
+| Pins                | Pins tab. Optional data source with one object per pin.                                                                                                                                                                         |
+| Latitude, Longitude | Pins tab. Decimal, Integer or Long attributes with the pin's position in degrees: latitude from -90 to 90, longitude from -180 to 180. Pins without a valid position are skipped.                                               |
+| Caption             | Pins tab. Text shown next to the pin, e.g. the city name. It can include attribute values.                                                                                                                                      |
+| Pin color           | Pins tab. Fill color of the pins. If left empty, red (`#b91c1c`).                                                                                                                                                               |
+| Class, Style        | The Common tab's Class and Style properties are applied to the map's root element.                                                                                                                                              |
 
 ### Tooltips and data
 
@@ -66,6 +78,18 @@ Somaliland instead of being skipped, and clicking either region passes `CYP` or 
 Objects without a value, or with an ISO code the map doesn't know (e.g. "PRT"), are not shown. If several objects have
 the same ISO code (ignoring case and spaces), the last one with a value is used. Long tooltips may extend beyond the
 map; a parent container with `overflow: hidden` will clip them.
+
+## Zoom and pins
+
+With **Zoom and pan** on, users can zoom with the zoom buttons, by double-clicking, with Ctrl/Cmd + mouse wheel or a
+trackpad pinch, or with the keyboard once the map has focus (`+` and `-` to zoom, the arrow keys to pan, Escape to
+reset), and pan by dragging. A plain mouse wheel still scrolls the page. While zooming, the map shows the names of the
+countries they fit inside. Clicking a country still runs the On Click action. A zoomable map clips its content to its
+box, so tooltips near its edges can be cut off.
+
+**Pins** are drawn with or without zoom. Each pin needs a latitude and a longitude; the caption is optional. When pins
+overlap, the one that comes first in the Pins data source is shown, so sort the data source by importance. Pins don't
+respond to clicks.
 
 ## On Click Action
 

@@ -17,6 +17,11 @@ import { WorldMap } from "../WorldMap";
 import { readFileSync } from "fs";
 
 beforeAll(stubResizeObserver);
+afterEach(() => jest.restoreAllMocks());
+
+// jsdom has no layout, so the map measures 0px wide, and the library draws no pins on a map without a width.
+const giveMapAWidth = () =>
+    jest.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({ width: 800, height: 600 });
 
 const items = [item("1"), item("2"), item("3")];
 const isoCodes = listAttribute({ 1: "BR", 2: "PT", 3: "DE" });
@@ -205,6 +210,63 @@ describe("WorldMap", () => {
         expect(tooltipOf(container, "Brazil")).toBe("Brazil 5");
     });
 
+    it("has no zoom buttons or country names unless zoom is on", () => {
+        const { container } = renderMap();
+
+        expect(container.querySelector(".worldmap__zoom-viewport")).toBeNull();
+        expect(container.querySelector('[data-map-layer="country-labels"]')).toBeNull();
+        expect(container.firstChild).not.toHaveClass("widget-worldmap--zoom");
+    });
+
+    it("adds zoom buttons and country names when zoom is on", () => {
+        const { container, getByRole } = renderMap({
+            zoomEnabled: true,
+            zoomMaxScale: 4,
+            zoomShowControls: true,
+            showCountryLabels: true
+        });
+
+        expect(container.firstChild).toHaveClass("widget-worldmap--zoom");
+        expect(getByRole("button", { name: "Zoom in" })).toBeInTheDocument();
+        expect(container.querySelector('[data-map-layer="country-labels"]')).not.toBeNull();
+    });
+
+    it("hides the zoom buttons and country names when they are turned off", () => {
+        const { container, queryByRole } = renderMap({
+            zoomEnabled: true,
+            zoomMaxScale: 4,
+            zoomShowControls: false,
+            showCountryLabels: false
+        });
+
+        expect(container.querySelector(".worldmap__zoom-viewport")).not.toBeNull();
+        expect(queryByRole("button", { name: "Zoom in" })).toBeNull();
+        expect(container.querySelector('[data-map-layer="country-labels"]')).toBeNull();
+    });
+
+    it("draws a pin with its caption for each item with a latitude and longitude", () => {
+        giveMapAWidth();
+        const pinItems = [item("a"), item("b"), item("c"), item("d")];
+        const { container } = renderMap({
+            pinList: listValue(pinItems),
+            pinLatitude: listAttribute({ a: big("52.37"), b: big(-23.55), c: null, d: big(10) }),
+            pinLongitude: listAttribute({ a: big("4.9"), b: big(-46.63), c: big(10), d: big(500) }),
+            pinCaption: listAttribute({ a: "Amsterdam", b: "São Paulo", c: "No latitude", d: "Out of range" }),
+            pinColor: "#0000ff"
+        });
+
+        const pins = [...container.querySelectorAll("[data-map-pin]")];
+        expect(pins.map(pin => pin.textContent)).toEqual(["Amsterdam", "São Paulo"]);
+        expect(pins[0].querySelector("path")).toHaveAttribute("fill", "#0000ff");
+    });
+
+    it("draws no pins without the Pins data source", () => {
+        giveMapAWidth();
+        const { container } = renderMap({ pinLatitude: listAttribute({}), pinLongitude: listAttribute({}) });
+
+        expect(container.querySelector('[data-map-layer="pins"]')).toBeNull();
+    });
+
     // The CSS targets react-path-tooltip's internal markup, so check every selector still matches after upgrades.
     it("renders markup that every selector in WorldMap.css still matches", () => {
         const cssPath = join(dirname(expect.getState().testPath), "../ui/WorldMap.css");
@@ -213,7 +275,8 @@ describe("WorldMap", () => {
             .map(match => match[1].trim())
             .filter(prelude => !prelude.startsWith("@"))
             .flatMap(selectorList => selectorList.split(",").map(selector => selector.trim()));
-        const { container } = renderMap();
+        // With zoom, so the zoom-only selectors are checked too.
+        const { container } = renderMap({ zoomEnabled: true, zoomMaxScale: 8 });
 
         expect(selectors.length).toBeGreaterThan(0);
         for (const selector of selectors) {

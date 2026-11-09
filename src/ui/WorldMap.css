@@ -19,3 +19,11 @@ This selector relies on react-path-tooltip's internal markup: re-check it whenev
 .widget-worldmap g[pointer-events="none"] > rect[width="0"] ~ * {
     visibility: hidden;
 }
+
+/*
+With zoom and pan, the zoomed-in map is larger than the map's box, so clip it again. Tooltips near the edge of a
+zoomable map are clipped too.
+*/
+.widget-worldmap--zoom svg:not(:root) {
+    overflow: hidden;
+}

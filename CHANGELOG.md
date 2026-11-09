@@ -2,6 +2,24 @@
 
 All notable changes to the World Map widget are documented in this file.
 
+## [2.3.0] - 2026-11-09
+
+### Added
+
+-   Zoom and pan (Zoom tab, off by default): zoom buttons, double-click, keyboard, Ctrl/Cmd + mouse wheel and dragging.
+    While zoomed, the map shows the names of the countries they fit inside. Settings for the maximum zoom, the buttons,
+    the country names and their color.
+-   Pins (Pins tab): markers with a caption at a latitude and longitude, from their own data source, with a configurable
+    color. They are shown with or without zoom.
+-   The Studio Pro preview shows the zoom buttons, the country names and three sample pins when they are configured.
+
+### Changed
+
+-   Updated react-svg-worldmap to 2.5.0, which adds zoom, pins and country names. Maps without zoom and pins look and
+    work the same as before.
+-   Existing World Map widgets show "widget definition has changed": right-click the widget and choose Update widget, or
+    use App → Update all widgets. The new settings start off, so existing maps don't change.
+
 ## [2.2.1] - 2026-10-20
 
 ### Changed
