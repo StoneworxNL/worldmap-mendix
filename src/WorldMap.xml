@@ -13,6 +13,8 @@
     <description>
         World Map SVG Mendix Pluggable Widget based on https://yanivam.github.io/react-svg-worldmap
     </description>
+    <studioProCategory>Display</studioProCategory>
+    <studioCategory>Display</studioCategory>
     <icon />
     <properties>
         <propertyGroup caption="General">

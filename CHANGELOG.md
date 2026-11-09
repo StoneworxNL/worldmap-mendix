@@ -11,10 +11,12 @@ All notable changes to the World Map widget are documented in this file.
     the country names and their color.
 -   Pins (Pins tab): markers with a caption at a latitude and longitude, from their own data source, with a configurable
     color. They are shown with or without zoom.
+-   New toolbox icon and tile, each in a light and a dark version.
 -   The Studio Pro preview shows the zoom buttons, the country names and three sample pins when they are configured.
 
 ### Changed
 
+-   The widget is now in the toolbox's Display category instead of Add-ons.
 -   Updated react-svg-worldmap to 2.5.0, which adds zoom, pins and country names. Maps without zoom and pins look and
     work the same as before.
 -   Existing World Map widgets show "widget definition has changed": right-click the widget and choose Update widget, or
