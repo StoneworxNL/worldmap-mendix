@@ -2,7 +2,8 @@ name: Request review
 
 # When all checks pass on a pull request, ask the reviewer for a review.
 # Skips drafts, PRs opened by the reviewer, and PRs the reviewer was already asked
-# to review or has reviewed. Takes effect once this file is on the default branch.
+# to review or has reviewed. The reviewer is the PR_REVIEWER repository variable; nothing
+# happens while it isn't set. Takes effect once this file is on the default branch.
 
 on:
     workflow_run:
@@ -19,11 +20,15 @@ jobs:
         env:
             GH_TOKEN: ${{ github.token }}
             REPO: ${{ github.repository }}
-            REVIEWER: ${{ vars.PR_REVIEWER || 'rcunhasx' }}
+            REVIEWER: ${{ vars.PR_REVIEWER }}
             HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         steps:
             - name: Request review
               run: |
+                  if [ -z "$REVIEWER" ]; then
+                      echo "The PR_REVIEWER repository variable is not set; no review requested."
+                      exit 0
+                  fi
                   for pr in $(gh api "repos/$REPO/commits/$HEAD_SHA/pulls" --jq '.[] | select(.state == "open") | .number'); do
                       info=$(gh api "repos/$REPO/pulls/$pr" --jq '"\(.draft) \(.user.login) \(.head.sha)"')
                       read -r draft author sha <<< "$info"

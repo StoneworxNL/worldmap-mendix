@@ -24,9 +24,11 @@ already in progress there.
 
 ## Updating dependencies
 
--   `@mendix/pluggable-widgets-tools` 11.16 and later may migrate `package.json` itself on first run (React
-    resolutions/overrides) and asks "Update dependencies?" interactively. Run a script once with `echo y |` to accept,
-    then commit the result.
+-   Keep `@mendix/pluggable-widgets-tools` on 11.15 (`~11.15.0`) while the widget supports Mendix 11.12.5. Its major
+    version must match the Mendix major, and 11.16 and later migrate `package.json` to React 19.3 on first run, asking
+    "Update dependencies?" interactively. Never run a bare `ncu -u`; use `ncu -u --target minor` and reject the tools.
+-   Dependabot groups minor and patch updates weekly; the tools and react-svg-worldmap get their own PRs. Check those by
+    hand (react-svg-worldmap minors have changed behaviour before).
 -   react-svg-worldmap's CHANGELOG is not always up to date; compare `dist/index.d.ts` between versions to see API
     changes. New library features are opt-in; the widget only uses `WorldMap` and `regions`.
 -   React is provided by the Mendix runtime and is not bundled.

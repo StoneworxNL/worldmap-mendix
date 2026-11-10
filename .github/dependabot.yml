@@ -4,9 +4,18 @@ updates:
       directory: /
       schedule:
           interval: weekly
+      ignore:
+          # The tools' major version must match the Mendix major version, so major updates are done by hand.
+          - dependency-name: "@mendix/pluggable-widgets-tools"
+            update-types: ["version-update:semver-major"]
       groups:
+          # Minor and patch updates in one weekly PR. Major updates, the Mendix widget tools (11.16 and later
+          # migrate React interactively) and react-svg-worldmap (a minor release has changed behaviour before)
+          # each get their own PR.
           dependencies:
               patterns: ["*"]
+              exclude-patterns: ["@mendix/pluggable-widgets-tools", "react-svg-worldmap"]
+              update-types: ["minor", "patch"]
     - package-ecosystem: github-actions
       directory: /
       schedule:
