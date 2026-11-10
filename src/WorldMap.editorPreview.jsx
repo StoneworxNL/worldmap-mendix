@@ -15,10 +15,44 @@ const sampleData = [
     { country: "pt", value: 10 }
 ];
 
-export function preview({ class: className, valueSuffix, sizeEnum, color }) {
+// Sample pins, shown when the Pins data source is set.
+const samplePins = [
+    { caption: "Amsterdam", coordinates: [4.9, 52.37] },
+    { caption: "São Paulo", coordinates: [-46.63, -23.55] },
+    { caption: "Tokyo", coordinates: [139.69, 35.69] }
+];
+
+export function preview({
+    class: className,
+    valueSuffix,
+    sizeEnum,
+    color,
+    zoomEnabled,
+    zoomShowControls,
+    showCountryLabels,
+    labelColor,
+    pinList,
+    pinColor
+}) {
+    const zoom = zoomEnabled
+        ? { showControls: zoomShowControls !== false, showCountryLabels: showCountryLabels !== false }
+        : false;
+    // pointer-events: none keeps the map's zoom, pan and wheel handlers from taking over Studio Pro's editor canvas.
     return (
-        <div className={classNames("widget-worldmap", className)}>
-            <WorldMap color={color || undefined} valueSuffix={valueSuffix} size={sizeEnum} data={sampleData} />
+        <div
+            className={classNames("widget-worldmap", { "widget-worldmap--zoom": zoomEnabled }, className)}
+            style={{ pointerEvents: "none" }}
+        >
+            <WorldMap
+                color={color || undefined}
+                valueSuffix={valueSuffix}
+                size={sizeEnum}
+                data={sampleData}
+                zoom={zoom}
+                labelColor={labelColor || undefined}
+                pins={pinList ? samplePins : undefined}
+                pinColor={pinColor || undefined}
+            />
         </div>
     );
 }

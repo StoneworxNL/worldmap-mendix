@@ -46,35 +46,68 @@
  * @param {("web"|"desktop")} target
  * @returns {Properties}
  */
+// Keep in sync with the clamp in components/WorldMapComponent.jsx.
+const MIN_ZOOM = 2;
+const MAX_ZOOM = 20;
+
 export function getProperties(values, defaultProperties, target) {
-    // Do the values manipulation here to control the visibility of properties in Studio and Studio Pro conditionally.
-    /* Example
-    if (values.myProperty === "custom") {
-        delete defaultProperties.properties.myOtherProperty;
+    if (!values.zoomEnabled) {
+        hideProperties(defaultProperties, ["zoomMaxScale", "zoomShowControls", "showCountryLabels", "labelColor"]);
+    } else if (!values.showCountryLabels) {
+        hideProperties(defaultProperties, ["labelColor"]);
     }
-    */
+    if (!values.pinList) {
+        hideProperties(defaultProperties, ["pinLatitude", "pinLongitude", "pinCaption", "pinColor"]);
+    }
     return defaultProperties;
 }
 
-// /**
-//  * @param {Object} values
-//  * @returns {Problem[]} returns a list of problems.
-//  */
-// export function check(values) {
-//    /** @type {Problem[]} */
-//    const errors = [];
-//    // Add errors to the above array to throw errors in Studio and Studio Pro.
-//    /* Example
-//    if (values.myProperty !== "custom") {
-//        errors.push({
-//            property: `myProperty`,
-//            message: `The value of 'myProperty' is different of 'custom'.`,
-//            url: "https://github.com/myrepo/mywidget"
-//        });
-//    }
-//    */
-//    return errors;
-// }
+function hideProperties(propertyGroups, keys) {
+    for (const group of propertyGroups) {
+        group.properties = group.properties?.filter(property => !keys.includes(property.key));
+        if (group.propertyGroups) {
+            hideProperties(group.propertyGroups, keys);
+        }
+    }
+}
+
+/**
+ * @param {Object} values
+ * @returns {Problem[]} returns a list of problems.
+ */
+export function check(values) {
+    /** @type {Problem[]} */
+    const errors = [];
+    if (
+        values.zoomEnabled &&
+        values.zoomMaxScale != null &&
+        (values.zoomMaxScale < MIN_ZOOM || values.zoomMaxScale > MAX_ZOOM)
+    ) {
+        errors.push({
+            property: "zoomMaxScale",
+            message: `Maximum zoom must be between ${MIN_ZOOM} and ${MAX_ZOOM}.`
+        });
+    }
+    if (values.pinList && !values.zoomEnabled) {
+        errors.push({
+            property: "pinList",
+            severity: "warning",
+            message:
+                "Zoom and pan is off, so pins that overlap another pin or its caption stay hidden. Turn on zoom, or use short captions and few pins."
+        });
+    }
+    if (values.pinList) {
+        for (const [key, caption] of [
+            ["pinLatitude", "Latitude"],
+            ["pinLongitude", "Longitude"]
+        ]) {
+            if (!values[key]) {
+                errors.push({ property: key, message: `Select the ${caption} attribute for the pins.` });
+            }
+        }
+    }
+    return errors;
+}
 
 // /**
 //  * @param {object} values

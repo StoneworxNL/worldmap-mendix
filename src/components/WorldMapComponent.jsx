@@ -10,6 +10,11 @@ const mapIsoCodes = new Set(regions.map(region => region.code));
 
 const isEmpty = value => value == null || (typeof value === "string" && value.trim() === "");
 
+// The range Studio Pro allows for Maximum zoom (see check() in WorldMap.editorConfig.js). Below 2 there's nothing to
+// zoom; far above 20 users can zoom into a single pixel.
+const MIN_ZOOM = 2;
+const MAX_ZOOM = 20;
+
 export function WorldMapComponent({
     className,
     style,
@@ -19,7 +24,17 @@ export function WorldMapComponent({
     valueSuffix,
     sizeEnum,
     color,
-    onClickAction
+    onClickAction,
+    zoomEnabled,
+    zoomMaxScale,
+    zoomShowControls,
+    showCountryLabels,
+    labelColor,
+    pinList,
+    pinLatitude,
+    pinLongitude,
+    pinCaption,
+    pinColor
 }) {
     // Mendix's own number formatter (user's locale), with thousands separators, which Mendix leaves off by default.
     const numberFormatter = useMemo(() => {
@@ -48,6 +63,35 @@ export function WorldMapComponent({
         return { countries: data, labels: formattedValues };
     }, [countryList, countryISO, countryValue, numberFormatter]);
 
+    // Zoom is opt-in; false keeps the map as it was before zoom existed. Maximum zoom is clamped to MIN_ZOOM-MAX_ZOOM.
+    const zoom = useMemo(
+        () =>
+            zoomEnabled
+                ? {
+                      maxScale: Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoomMaxScale)),
+                      showControls: zoomShowControls !== false,
+                      showCountryLabels: showCountryLabels !== false
+                  }
+                : false,
+        [zoomEnabled, zoomMaxScale, zoomShowControls, showCountryLabels]
+    );
+
+    // Pins without a latitude or longitude are skipped. The library skips coordinates out of range itself and, when
+    // pins overlap, keeps the one that comes first in the list.
+    const pins = useMemo(() => {
+        if (!pinList?.items || !pinLatitude || !pinLongitude) {
+            return undefined;
+        }
+        return pinList.items.flatMap(item => {
+            const latitude = toMapValue(pinLatitude.get(item).value);
+            const longitude = toMapValue(pinLongitude.get(item).value);
+            if (typeof latitude !== "number" || typeof longitude !== "number") {
+                return [];
+            }
+            return [{ id: item.id, coordinates: [longitude, latitude], caption: pinCaption?.get(item).value ?? "" }];
+        });
+    }, [pinList, pinLatitude, pinLongitude, pinCaption]);
+
     const tooltipText = useCallback(
         ({ countryCode, countryName, countryValue: value, prefix, suffix }) =>
             [countryName, prefix, labels[countryCode] ?? String(value), suffix].filter(Boolean).join(" "),
@@ -67,9 +111,9 @@ export function WorldMapComponent({
         [onClickAction]
     );
 
-    // An empty Color would become fill: "" (black countries); undefined lets the library use its default color.
+    // An empty color would become fill: "" (black); undefined lets the library use its default color.
     return (
-        <div className={classNames("widget-worldmap", className)} style={style}>
+        <div className={classNames("widget-worldmap", { "widget-worldmap--zoom": zoom }, className)} style={style}>
             <WorldMap
                 color={color || undefined}
                 valueSuffix={valueSuffix}
@@ -77,6 +121,10 @@ export function WorldMapComponent({
                 data={countries}
                 onClickFunction={clickAction}
                 tooltipTextFunction={tooltipText}
+                zoom={zoom}
+                labelColor={labelColor || undefined}
+                pins={pins}
+                pinColor={pinColor || undefined}
             />
         </div>
     );
