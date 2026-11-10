@@ -231,6 +231,29 @@ describe("WorldMap", () => {
         expect(container.querySelector('[data-map-layer="country-labels"]')).not.toBeNull();
     });
 
+    it("clamps Maximum zoom to 20", () => {
+        giveMapAWidth();
+        const { container, getByRole } = renderMap({
+            zoomEnabled: true,
+            zoomMaxScale: 800,
+            zoomShowControls: true,
+            showCountryLabels: true
+        });
+        const scale = () =>
+            Number(
+                /scale\(([\d.]+)\)/.exec(
+                    container.querySelector('[data-map-layer="countries"]').getAttribute("transform")
+                )[1]
+            );
+        const initial = scale();
+
+        for (let i = 0; i < 10; i++) {
+            fireEvent.click(getByRole("button", { name: "Zoom in" }));
+        }
+
+        expect(scale() / initial).toBeCloseTo(20);
+    });
+
     it("hides the zoom buttons and country names when they are turned off", () => {
         const { container, queryByRole } = renderMap({
             zoomEnabled: true,

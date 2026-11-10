@@ -14,7 +14,6 @@
         World Map SVG Mendix Pluggable Widget based on https://yanivam.github.io/react-svg-worldmap
     </description>
     <studioProCategory>Display</studioProCategory>
-    <studioCategory>Display</studioCategory>
     <icon />
     <properties>
         <propertyGroup caption="General">
@@ -81,7 +80,7 @@
             </property>
             <property key="zoomMaxScale" type="integer" defaultValue="8">
                 <caption>Maximum zoom</caption>
-                <description>How far users can zoom in, as a multiple of the whole map. At least 2.</description>
+                <description>How far users can zoom in, as a multiple of the whole map. From 2 to 20.</description>
             </property>
             <property key="zoomShowControls" type="boolean" defaultValue="true">
                 <caption>Zoom buttons</caption>

@@ -10,6 +10,11 @@ const mapIsoCodes = new Set(regions.map(region => region.code));
 
 const isEmpty = value => value == null || (typeof value === "string" && value.trim() === "");
 
+// The range Studio Pro allows for Maximum zoom (see check() in WorldMap.editorConfig.js). Below 2 there's nothing to
+// zoom; far above 20 users can zoom into a single pixel.
+const MIN_ZOOM = 2;
+const MAX_ZOOM = 20;
+
 export function WorldMapComponent({
     className,
     style,
@@ -58,13 +63,12 @@ export function WorldMapComponent({
         return { countries: data, labels: formattedValues };
     }, [countryList, countryISO, countryValue, numberFormatter]);
 
-    // Zoom is opt-in; false keeps the map as it was before zoom existed. The library zooms out no further than the
-    // whole map (1), so a maximum below 2 would leave nothing to zoom.
+    // Zoom is opt-in; false keeps the map as it was before zoom existed. Maximum zoom is clamped to MIN_ZOOM-MAX_ZOOM.
     const zoom = useMemo(
         () =>
             zoomEnabled
                 ? {
-                      maxScale: Math.max(2, zoomMaxScale),
+                      maxScale: Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoomMaxScale)),
                       showControls: zoomShowControls !== false,
                       showCountryLabels: showCountryLabels !== false
                   }

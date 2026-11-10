@@ -46,6 +46,10 @@
  * @param {("web"|"desktop")} target
  * @returns {Properties}
  */
+// Keep in sync with the clamp in components/WorldMapComponent.jsx.
+const MIN_ZOOM = 2;
+const MAX_ZOOM = 20;
+
 export function getProperties(values, defaultProperties, target) {
     if (!values.zoomEnabled) {
         hideProperties(defaultProperties, ["zoomMaxScale", "zoomShowControls", "showCountryLabels", "labelColor"]);
@@ -74,8 +78,23 @@ function hideProperties(propertyGroups, keys) {
 export function check(values) {
     /** @type {Problem[]} */
     const errors = [];
-    if (values.zoomEnabled && values.zoomMaxScale != null && values.zoomMaxScale < 2) {
-        errors.push({ property: "zoomMaxScale", message: "Maximum zoom must be 2 or more." });
+    if (
+        values.zoomEnabled &&
+        values.zoomMaxScale != null &&
+        (values.zoomMaxScale < MIN_ZOOM || values.zoomMaxScale > MAX_ZOOM)
+    ) {
+        errors.push({
+            property: "zoomMaxScale",
+            message: `Maximum zoom must be between ${MIN_ZOOM} and ${MAX_ZOOM}.`
+        });
+    }
+    if (values.pinList && !values.zoomEnabled) {
+        errors.push({
+            property: "pinList",
+            severity: "warning",
+            message:
+                "Zoom and pan is off, so pins that overlap another pin or its caption stay hidden. Turn on zoom, or use short captions and few pins."
+        });
     }
     if (values.pinList) {
         for (const [key, caption] of [

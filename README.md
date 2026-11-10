@@ -55,7 +55,7 @@ Mendix 11.12.5 or later. The widget is built with the Mendix 11.15 widget tools 
 | Color               | Color of highlighted countries, e.g. "red" or "#0f828c". If left empty, the map uses light gray (`#dddddd`).                                                                                                                    |
 | On Click            | Optional action to run when a country is clicked. The clicked country's ISO code is available to it as the `$clickedIsoCode` variable.                                                                                          |
 | Zoom and pan        | Zoom tab. Off by default. Lets users zoom and pan the map; see "Zoom and pins" below.                                                                                                                                           |
-| Maximum zoom        | Zoom tab. How far users can zoom in, as a multiple of the whole map. Default 8, at least 2.                                                                                                                                     |
+| Maximum zoom        | Zoom tab. How far users can zoom in, as a multiple of the whole map. Default 8, from 2 to 20.                                                                                                                                   |
 | Zoom buttons        | Zoom tab. Shows the zoom in, zoom out and reset buttons in the map's bottom-right corner. On by default.                                                                                                                        |
 | Country names       | Zoom tab. Shows the names of countries they fit inside; more appear as users zoom in. On by default.                                                                                                                            |
 | Country name color  | Zoom tab. Color of the country names. If left empty, dark gray (`#222222`).                                                                                                                                                     |
@@ -87,14 +87,19 @@ reset), and pan by dragging. A plain mouse wheel still scrolls the page. While z
 countries they fit inside. Clicking a country still runs the On Click action. A zoomable map clips its content to its
 box, so tooltips near its edges can be cut off.
 
-**Pins** are drawn with or without zoom. Each pin needs a latitude and a longitude; the caption is optional. When pins
-overlap, the one that comes first in the Pins data source is shown, so sort the data source by importance. Pins don't
+**Pins** are drawn with or without zoom. Each pin needs a latitude and a longitude; the caption is optional. Pins don't
 respond to clicks.
+
+When two pins overlap, counting their captions, only the one that comes first in the Pins data source is drawn, so sort
+the data source by importance. Zooming in makes room for the others. **With zoom off, overlapping pins stay hidden, and
+long captions hide more pins**: Studio Pro shows a warning for pins without zoom. Keep the Pins data source to a few
+hundred objects at most (for example with an XPath constraint): every pin is checked against the others each time the
+map zooms.
 
 On a map without zoom, pin captions near the edge of the map can extend beyond it, like tooltips do.
 
-The zoom buttons' screen-reader labels and the zoom status announcements come from react-svg-worldmap and are in English
-only.
+Country names, the zoom buttons' screen-reader labels and the zoom status announcements come from react-svg-worldmap and
+are in English only, also in apps in other languages.
 
 ## On Click Action
 

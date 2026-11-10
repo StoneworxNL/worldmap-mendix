@@ -4,6 +4,12 @@ All notable changes to the World Map widget are documented in this file.
 
 ## [2.3.0] - 2026-11-09
 
+### Upgrading from 2.2.x
+
+-   Existing World Map widgets show "widget definition has changed": right-click the widget and choose Update widget, or
+    use App → Update all widgets. The new settings start off, so existing maps don't change.
+-   The widget moves from the toolbox's Add-ons category to Display.
+
 ### Added
 
 -   Zoom and pan (Zoom tab, off by default): zoom buttons, double-click, keyboard, Ctrl/Cmd + mouse wheel and dragging.
@@ -16,11 +22,8 @@ All notable changes to the World Map widget are documented in this file.
 
 ### Changed
 
--   The widget is now in the toolbox's Display category instead of Add-ons.
--   Updated react-svg-worldmap to 2.5.0, which adds zoom, pins and country names. Maps without zoom and pins look and
-    work the same as before.
--   Existing World Map widgets show "widget definition has changed": right-click the widget and choose Update widget, or
-    use App → Update all widgets. The new settings start off, so existing maps don't change.
+-   Updated react-svg-worldmap to 2.5.0 (pinned to 2.5.x), which adds zoom, pins and country names. Maps without zoom
+    and pins look and work the same as before.
 
 ## [2.2.1] - 2026-10-20
 
