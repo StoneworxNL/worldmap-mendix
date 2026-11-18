@@ -2,6 +2,36 @@
 
 All notable changes to the World Map widget are documented in this file.
 
+## [2.3.0] - 2026-11-09
+
+### Upgrading from 2.2.x
+
+-   Existing World Map widgets show "widget definition has changed": right-click the widget and choose Update widget, or
+    use App → Update all widgets. The new settings start off, so existing maps don't change.
+-   The widget moves from the toolbox's Add-ons category to Display.
+
+### Added
+
+-   Zoom and pan (Zoom tab, off by default): zoom buttons, double-click, keyboard, Ctrl/Cmd + mouse wheel and dragging.
+    While zoomed, the map shows the names of the countries they fit inside. Settings for the maximum zoom, the buttons,
+    the country names and their color.
+-   Pins (Pins tab): markers with a caption at a latitude and longitude, from their own data source, with a configurable
+    color. They are shown with or without zoom.
+-   New toolbox icon and tile, each in a light and a dark version.
+-   The Studio Pro preview shows the zoom buttons, the country names and three sample pins when they are configured.
+-   Theme (General tab): Default, or Atlas, with blue water, slate borders and light land.
+-   Detailed borders (Zoom tab, on by default): sharper Natural Earth 10m country borders from a configurable zoom
+    level. They are a separate 2.4 MB file in the widget package, downloaded only when a user points at a zoomable map.
+-   Regions (new Regions tab, off by default): the states, provinces or other regions of the countries in view, as
+    dashed lines from a configurable zoom level. They come from GeoJSON files per country at a URL you set, optionally
+    limited to a list of countries. An On region status change action receives each country's loading status.
+
+### Changed
+
+-   Updated react-svg-worldmap to 2.7.0 (pinned to 2.7.x), which adds zoom, pins, country names, the Atlas theme,
+    detailed borders and regions. Maps without zoom and pins look and work the same as before. Maps with zoom get the
+    detailed borders unless you turn them off. The widget's JavaScript is about 10 KB bigger than with 2.5.0.
+
 ## [2.2.1] - 2026-10-20
 
 ### Changed

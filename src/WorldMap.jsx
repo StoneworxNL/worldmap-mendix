@@ -10,7 +10,26 @@ export function WorldMap({
     valueSuffix,
     sizeEnum,
     color,
-    onClickAction
+    onClickAction,
+    zoomEnabled,
+    zoomMaxScale,
+    zoomShowControls,
+    showCountryLabels,
+    labelColor,
+    detailedBorders,
+    detailedBordersMinScale,
+    theme,
+    regionsEnabled,
+    regionMinScale,
+    regionUrl,
+    regionCountries,
+    regionNameProperty,
+    onRegionStatusChange,
+    pinList,
+    pinLatitude,
+    pinLongitude,
+    pinCaption,
+    pinColor
 }) {
     return (
         <WorldMapComponent
@@ -23,6 +42,25 @@ export function WorldMap({
             sizeEnum={sizeEnum}
             color={color}
             onClickAction={onClickAction}
+            zoomEnabled={zoomEnabled}
+            zoomMaxScale={zoomMaxScale}
+            zoomShowControls={zoomShowControls}
+            showCountryLabels={showCountryLabels}
+            labelColor={labelColor}
+            detailedBorders={detailedBorders}
+            detailedBordersMinScale={detailedBordersMinScale}
+            theme={theme}
+            regionsEnabled={regionsEnabled}
+            regionMinScale={regionMinScale}
+            regionUrl={regionUrl}
+            regionCountries={regionCountries}
+            regionNameProperty={regionNameProperty}
+            onRegionStatusChange={onRegionStatusChange}
+            pinList={pinList}
+            pinLatitude={pinLatitude}
+            pinLongitude={pinLongitude}
+            pinCaption={pinCaption}
+            pinColor={pinColor}
         />
     );
 }
