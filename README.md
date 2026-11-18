@@ -21,6 +21,10 @@ countries on a world map.
 -   An On Click action that receives the clicked country's ISO code.
 -   Optional zoom and pan, with zoom buttons and country names that appear as you zoom in.
 -   Optional pins: markers with a caption at a latitude and longitude, e.g. offices or cities.
+-   An optional Atlas theme: blue water, slate borders and light land.
+-   Sharper (Natural Earth 10m) country borders when zoomed in, downloaded only when a user zooms in that far.
+-   Optional regions: states, provinces or other regions of the countries in view, from your own GeoJSON files, drawn as
+    dashed lines when zoomed in, with an action that reports their loading status.
 -   Works anywhere on a page; no data view needed. The widget's Class and Style properties apply to the map.
 -   A design-mode preview in Studio Pro.
 
@@ -97,6 +101,35 @@ hundred objects at most (for example with an XPath constraint): every pin is che
 map zooms.
 
 On a map without zoom, pin captions near the edge of the map can extend beyond it, like tooltips do.
+
+### Detailed borders
+
+With zoom on, the map switches to detailed (Natural Earth 1:10m) country borders and coastlines from zoom level 2
+(**Detailed borders from zoom**). The widget ships them as a separate file, `assets/countries-detailed-<version>.json`
+(about 2.4 MB, much less when the server compresses it), next to its JavaScript. It is downloaded once, the first time
+the pointer is over a zoomable map, and not at all for maps without zoom. Turn **Detailed borders** off to never
+download it.
+
+### Regions
+
+With **Regions** on (Regions tab, needs zoom), the map draws the regions of the countries in view as dashed lines from
+**Regions from zoom** (default 4). The widget doesn't include region data: set **Region data URL** to the address of a
+GeoJSON FeatureCollection per country, with `{code}` for the country's two-letter ISO code, for example
+`regions/{code}.geojson`. A relative address is relative to the app's root URL, so you can put the files in your app's
+`theme/web/regions` folder. Polygons may use either ring order. **Countries with regions** (e.g. `US, CA, BR`) limits
+the requests to the countries you have files for; when it's empty, every country in view is requested once, and a 404
+counts as "no regions". **Region name property** is the feature property with the region's name (default `name`).
+
+Natural Earth's [Admin 1 – States, Provinces](https://www.naturalearthdata.com/downloads/50m-cultural-vectors/) (public
+domain) and [geoBoundaries](https://www.geoboundaries.org/) (CC BY 4.0, name property `shapeName`) are good sources.
+Region files from another site must allow cross-origin requests.
+
+**On region status change** runs each time a country's regions start loading (`loading`), are drawn (`ready`), have no
+file (`unavailable`) or fail to load (`failed`), and with `idle` when the user zooms out past Regions from zoom. Its
+variables are the status and the country's ISO code (empty for `idle`). Regions don't respond to clicks or show
+tooltips.
+
+### Language
 
 Country names, the zoom buttons' screen-reader labels and the zoom status announcements come from react-svg-worldmap and
 are in English only, also in apps in other languages.

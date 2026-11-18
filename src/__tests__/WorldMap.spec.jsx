@@ -12,7 +12,7 @@ import {
     tooltipOf
 } from "./mendixMocks";
 import { dirname, join } from "path";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { WorldMap } from "../WorldMap";
 import { readFileSync } from "fs";
 
@@ -288,6 +288,118 @@ describe("WorldMap", () => {
         const { container } = renderMap({ pinLatitude: listAttribute({}), pinLongitude: listAttribute({}) });
 
         expect(container.querySelector('[data-map-layer="pins"]')).toBeNull();
+    });
+
+    it("draws the atlas theme's blue water only when Theme is Atlas", () => {
+        const water = container => container.querySelector("[data-map-ocean]")?.getAttribute("fill");
+
+        expect(water(renderMap({ theme: "atlas" }).container)?.toUpperCase()).toBe("#A0D7EB");
+        expect(water(renderMap({ theme: "default" }).container)?.toUpperCase()).not.toBe("#A0D7EB");
+    });
+
+    describe("when zoomed in", () => {
+        const zoomIn = (getByRole, times) => {
+            for (let i = 0; i < times; i++) {
+                fireEvent.click(getByRole("button", { name: "Zoom in" }));
+            }
+        };
+        const brazilPath = container => pathOf(container, "Brazil").getAttribute("d");
+
+        // Loading the detailed borders themselves isn't tested here: the library loads them with import(), which Jest
+        // doesn't support in node_modules. The widget's build replaces that import with a fetch of the JSON asset;
+        // that path is checked against the built bundle and in a running app.
+        it("keeps the simple borders when Detailed borders is off", async () => {
+            giveMapAWidth();
+            const { container, getByRole } = renderMap({
+                zoomEnabled: true,
+                zoomMaxScale: 8,
+                zoomShowControls: true,
+                detailedBorders: false,
+                detailedBordersMinScale: 2
+            });
+            const simple = brazilPath(container);
+
+            zoomIn(getByRole, 3);
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            expect(brazilPath(container)).toBe(simple);
+        });
+
+        it("loads and draws regions from the Region data URL and reports their status", async () => {
+            giveMapAWidth();
+            // One small square per country, wherever it is: enough to check the overlay.
+            const geoJson = url => ({
+                type: "FeatureCollection",
+                features: [
+                    {
+                        properties: { name: `Region of ${url}` },
+                        geometry: {
+                            type: "Polygon",
+                            coordinates: [
+                                [
+                                    [0, 0],
+                                    [1, 0],
+                                    [1, 1],
+                                    [0, 1],
+                                    [0, 0]
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            });
+            global.fetch = jest.fn(url =>
+                Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(geoJson(url)) })
+            );
+            const onRegionStatusChange = actionValue();
+            const { container, getByRole } = renderMap({
+                zoomEnabled: true,
+                zoomMaxScale: 8,
+                zoomShowControls: true,
+                detailedBorders: false,
+                regionsEnabled: true,
+                regionMinScale: 2,
+                regionUrl: "https://example.com/regions/{code}.json",
+                regionCountries: "",
+                regionNameProperty: "name",
+                onRegionStatusChange
+            });
+
+            expect(global.fetch).not.toHaveBeenCalled();
+            zoomIn(getByRole, 2);
+
+            await waitFor(() => expect(container.querySelector("[data-region-id]")).not.toBeNull());
+            const [url] = global.fetch.mock.calls[0];
+            expect(url).toMatch(/^https:\/\/example\.com\/regions\/[A-Z]{2}\.json$/);
+            expect(onRegionStatusChange.execute).toHaveBeenCalledWith(
+                expect.objectContaining({ regionStatus: "loading" })
+            );
+            expect(onRegionStatusChange.execute).toHaveBeenCalledWith(
+                expect.objectContaining({ regionStatus: "ready" })
+            );
+            delete global.fetch;
+        });
+
+        it("only requests the countries listed in Countries with regions", async () => {
+            giveMapAWidth();
+            global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) }));
+            const { getByRole } = renderMap({
+                zoomEnabled: true,
+                zoomMaxScale: 20,
+                zoomShowControls: true,
+                detailedBorders: false,
+                regionsEnabled: true,
+                regionMinScale: 2,
+                regionUrl: "regions/{code}.json",
+                regionCountries: "ZZ"
+            });
+
+            zoomIn(getByRole, 2);
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            expect(global.fetch).not.toHaveBeenCalled();
+            delete global.fetch;
+        });
     });
 
     // The CSS targets react-path-tooltip's internal markup, so check every selector still matches after upgrades.

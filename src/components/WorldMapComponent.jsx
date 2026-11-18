@@ -1,4 +1,5 @@
-import WorldMap, { regions } from "react-svg-worldmap";
+import WorldMap, { preloadDetailedCountryGeometry, regions } from "react-svg-worldmap";
+import { createRegionProvider, parseCountryCodes } from "./regionProvider";
 import { useCallback, useMemo } from "react";
 import classNames from "classnames";
 
@@ -15,6 +16,8 @@ const isEmpty = value => value == null || (typeof value === "string" && value.tr
 const MIN_ZOOM = 2;
 const MAX_ZOOM = 20;
 
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
 export function WorldMapComponent({
     className,
     style,
@@ -30,6 +33,15 @@ export function WorldMapComponent({
     zoomShowControls,
     showCountryLabels,
     labelColor,
+    detailedBorders,
+    detailedBordersMinScale,
+    theme,
+    regionsEnabled,
+    regionMinScale,
+    regionUrl,
+    regionCountries,
+    regionNameProperty,
+    onRegionStatusChange,
     pinList,
     pinLatitude,
     pinLongitude,
@@ -63,18 +75,62 @@ export function WorldMapComponent({
         return { countries: data, labels: formattedValues };
     }, [countryList, countryISO, countryValue, numberFormatter]);
 
-    // Zoom is opt-in; false keeps the map as it was before zoom existed. Maximum zoom is clamped to MIN_ZOOM-MAX_ZOOM.
-    const zoom = useMemo(
+    // Zoom is opt-in; false keeps the map as it was before zoom existed. Maximum zoom is clamped to MIN_ZOOM-MAX_ZOOM,
+    // and the zoom levels for detailed borders and regions to 1-maximum zoom.
+    const zoom = useMemo(() => {
+        if (!zoomEnabled) {
+            return false;
+        }
+        const maxScale = clamp(zoomMaxScale, MIN_ZOOM, MAX_ZOOM);
+        return {
+            maxScale,
+            showControls: zoomShowControls !== false,
+            showCountryLabels: showCountryLabels !== false,
+            detailedGeometry: detailedBorders !== false,
+            detailedGeometryMinScale: clamp(detailedBordersMinScale ?? 2, 1, maxScale),
+            regionDetailMinScale: clamp(regionMinScale ?? 4, 1, maxScale)
+        };
+    }, [
+        zoomEnabled,
+        zoomMaxScale,
+        zoomShowControls,
+        showCountryLabels,
+        detailedBorders,
+        detailedBordersMinScale,
+        regionMinScale
+    ]);
+
+    // Regions need zoom and a URL. The provider is rebuilt only when its settings change: a new provider makes the map
+    // load every country's regions again.
+    const regionProvider = useMemo(
         () =>
-            zoomEnabled
-                ? {
-                      maxScale: Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoomMaxScale)),
-                      showControls: zoomShowControls !== false,
-                      showCountryLabels: showCountryLabels !== false
-                  }
-                : false,
-        [zoomEnabled, zoomMaxScale, zoomShowControls, showCountryLabels]
+            zoomEnabled && regionsEnabled && regionUrl?.trim()
+                ? createRegionProvider({
+                      urlTemplate: regionUrl,
+                      countryCodes: parseCountryCodes(regionCountries),
+                      nameProperty: regionNameProperty?.trim()
+                  })
+                : undefined,
+        [zoomEnabled, regionsEnabled, regionUrl, regionCountries, regionNameProperty]
     );
+
+    // The library calls this from its loader, not from an effect, so running a Mendix action here can't cause a loop.
+    const regionStatusChange = useCallback(
+        ({ status, countryCode }) => {
+            if (onRegionStatusChange?.canExecute) {
+                onRegionStatusChange.execute({ regionStatus: status, regionCountryCode: countryCode ?? "" });
+            }
+        },
+        [onRegionStatusChange]
+    );
+
+    // Start downloading the detailed borders as soon as the pointer is over a zoomable map, so they are usually there
+    // by the time the user has zoomed in.
+    const preloadDetailedBorders = useCallback(() => {
+        if (zoom?.detailedGeometry) {
+            preloadDetailedCountryGeometry().catch(() => undefined);
+        }
+    }, [zoom]);
 
     // Pins without a latitude or longitude are skipped. The library skips coordinates out of range itself and, when
     // pins overlap, keeps the one that comes first in the list.
@@ -113,9 +169,14 @@ export function WorldMapComponent({
 
     // An empty color would become fill: "" (black); undefined lets the library use its default color.
     return (
-        <div className={classNames("widget-worldmap", { "widget-worldmap--zoom": zoom }, className)} style={style}>
+        <div
+            className={classNames("widget-worldmap", { "widget-worldmap--zoom": zoom }, className)}
+            style={style}
+            onPointerEnter={zoom ? preloadDetailedBorders : undefined}
+        >
             <WorldMap
                 color={color || undefined}
+                theme={theme === "atlas" ? "atlas" : undefined}
                 valueSuffix={valueSuffix}
                 size={sizeEnum}
                 data={countries}
@@ -123,6 +184,9 @@ export function WorldMapComponent({
                 tooltipTextFunction={tooltipText}
                 zoom={zoom}
                 labelColor={labelColor || undefined}
+                detailLevel={regionProvider ? "regions" : undefined}
+                detailProvider={regionProvider}
+                onDetailStatusChange={regionProvider && onRegionStatusChange ? regionStatusChange : undefined}
                 pins={pins}
                 pinColor={pinColor || undefined}
             />

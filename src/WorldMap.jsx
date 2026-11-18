@@ -16,6 +16,15 @@ export function WorldMap({
     zoomShowControls,
     showCountryLabels,
     labelColor,
+    detailedBorders,
+    detailedBordersMinScale,
+    theme,
+    regionsEnabled,
+    regionMinScale,
+    regionUrl,
+    regionCountries,
+    regionNameProperty,
+    onRegionStatusChange,
     pinList,
     pinLatitude,
     pinLongitude,
@@ -38,6 +47,15 @@ export function WorldMap({
             zoomShowControls={zoomShowControls}
             showCountryLabels={showCountryLabels}
             labelColor={labelColor}
+            detailedBorders={detailedBorders}
+            detailedBordersMinScale={detailedBordersMinScale}
+            theme={theme}
+            regionsEnabled={regionsEnabled}
+            regionMinScale={regionMinScale}
+            regionUrl={regionUrl}
+            regionCountries={regionCountries}
+            regionNameProperty={regionNameProperty}
+            onRegionStatusChange={onRegionStatusChange}
             pinList={pinList}
             pinLatitude={pinLatitude}
             pinLongitude={pinLongitude}

@@ -27,6 +27,7 @@ export function preview({
     valueSuffix,
     sizeEnum,
     color,
+    theme,
     zoomEnabled,
     zoomShowControls,
     showCountryLabels,
@@ -34,8 +35,13 @@ export function preview({
     pinList,
     pinColor
 }) {
+    // The preview never zooms in, so it never needs the detailed borders (which the preview build can't load).
     const zoom = zoomEnabled
-        ? { showControls: zoomShowControls !== false, showCountryLabels: showCountryLabels !== false }
+        ? {
+              showControls: zoomShowControls !== false,
+              showCountryLabels: showCountryLabels !== false,
+              detailedGeometry: false
+          }
         : false;
     // pointer-events: none keeps the map's zoom, pan and wheel handlers from taking over Studio Pro's editor canvas.
     return (
@@ -45,6 +51,7 @@ export function preview({
         >
             <WorldMap
                 color={color || undefined}
+                theme={theme === "atlas" ? "atlas" : undefined}
                 valueSuffix={valueSuffix}
                 size={sizeEnum}
                 data={sampleData}

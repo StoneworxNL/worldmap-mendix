@@ -52,9 +52,30 @@ const MAX_ZOOM = 20;
 
 export function getProperties(values, defaultProperties, target) {
     if (!values.zoomEnabled) {
-        hideProperties(defaultProperties, ["zoomMaxScale", "zoomShowControls", "showCountryLabels", "labelColor"]);
-    } else if (!values.showCountryLabels) {
-        hideProperties(defaultProperties, ["labelColor"]);
+        hideProperties(defaultProperties, [
+            "zoomMaxScale",
+            "zoomShowControls",
+            "showCountryLabels",
+            "labelColor",
+            "detailedBorders",
+            "detailedBordersMinScale"
+        ]);
+    } else {
+        if (!values.showCountryLabels) {
+            hideProperties(defaultProperties, ["labelColor"]);
+        }
+        if (!values.detailedBorders) {
+            hideProperties(defaultProperties, ["detailedBordersMinScale"]);
+        }
+    }
+    if (!values.regionsEnabled) {
+        hideProperties(defaultProperties, [
+            "regionMinScale",
+            "regionUrl",
+            "regionCountries",
+            "regionNameProperty",
+            "onRegionStatusChange"
+        ]);
     }
     if (!values.pinList) {
         hideProperties(defaultProperties, ["pinLatitude", "pinLongitude", "pinCaption", "pinColor"]);
@@ -86,6 +107,36 @@ export function check(values) {
         errors.push({
             property: "zoomMaxScale",
             message: `Maximum zoom must be between ${MIN_ZOOM} and ${MAX_ZOOM}.`
+        });
+    }
+    const maxScale = values.zoomMaxScale ?? 8;
+    for (const [key, caption, enabled] of [
+        ["detailedBordersMinScale", "Detailed borders from zoom", values.zoomEnabled && values.detailedBorders],
+        ["regionMinScale", "Regions from zoom", values.zoomEnabled && values.regionsEnabled]
+    ]) {
+        const scale = values[key];
+        if (enabled && scale != null && (scale < 1 || scale > maxScale)) {
+            errors.push({
+                property: key,
+                severity: "warning",
+                message: `${caption} must be between 1 and the maximum zoom (${maxScale}); the nearest of those is used.`
+            });
+        }
+    }
+    if (values.regionsEnabled && !values.zoomEnabled) {
+        errors.push({
+            property: "regionsEnabled",
+            severity: "warning",
+            message: "Regions are only drawn when zoomed in. Turn on Zoom and pan on the Zoom tab."
+        });
+    }
+    if (values.regionsEnabled && !values.regionUrl?.trim()) {
+        errors.push({ property: "regionUrl", message: "Enter the Region data URL, with {code} for the country code." });
+    } else if (values.regionsEnabled && !/\{code\}/i.test(values.regionUrl)) {
+        errors.push({
+            property: "regionUrl",
+            severity: "warning",
+            message: "The Region data URL has no {code}, so every country loads the same file."
         });
     }
     if (values.pinList && !values.zoomEnabled) {
