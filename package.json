@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "classnames": "^2.5.1",
+    "d3-geo": "^2.0.2",
     "react-svg-worldmap": "~2.7.0"
   },
   "resolutions": {

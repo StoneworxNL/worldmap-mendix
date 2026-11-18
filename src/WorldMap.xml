@@ -115,7 +115,7 @@
                 <caption>Detailed borders</caption>
                 <description>
                     Draw sharper country borders and coastlines when zoomed in. They are downloaded once (about 2.4 MB,
-                    less when the server compresses it), the first time a user zooms in that far.
+                    less when the server compresses it), as soon as a user points at the map.
                 </description>
             </property>
             <property key="detailedBordersMinScale" type="integer" defaultValue="2">

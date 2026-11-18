@@ -34,4 +34,49 @@ describe("check", () => {
 
         expect(problems.map(problem => problem.property)).toEqual(["pinLatitude", "pinLongitude"]);
     });
+
+    describe("regions", () => {
+        const regions = { zoomEnabled: true, zoomMaxScale: 8, regionsEnabled: true, regionUrl: "regions/{code}.json" };
+
+        it("accepts a complete regions setup", () => {
+            expect(check({ ...regions, regionMinScale: 4, regionCountries: "US, ca; BR" })).toEqual([]);
+        });
+
+        it("warns about regions without zoom", () => {
+            expect(messagesFor({ ...regions, zoomEnabled: false }, "regionsEnabled")).toEqual([
+                expect.objectContaining({ severity: "warning" })
+            ]);
+        });
+
+        it("asks for a Region data URL, and warns when it has no {code}", () => {
+            const [missing] = messagesFor({ ...regions, regionUrl: " " }, "regionUrl");
+            expect(missing.severity).toBeUndefined();
+            expect(messagesFor({ ...regions, regionUrl: "regions/all.json" }, "regionUrl")).toEqual([
+                expect.objectContaining({ severity: "warning" })
+            ]);
+        });
+
+        it("rejects country codes that aren't two letters", () => {
+            const [problem] = messagesFor({ ...regions, regionCountries: "US, USA, C4" }, "regionCountries");
+
+            expect(problem.message).toContain('"USA", "C4"');
+        });
+
+        it("measures the zoom levels against the maximum zoom the map really uses (2 to 20)", () => {
+            expect(messagesFor({ ...regions, zoomMaxScale: 1, regionMinScale: 2 }, "regionMinScale")).toEqual([]);
+            expect(messagesFor({ ...regions, zoomMaxScale: 50, regionMinScale: 30 }, "regionMinScale")).toHaveLength(1);
+            expect(
+                messagesFor(
+                    { ...regions, detailedBorders: true, detailedBordersMinScale: 9 },
+                    "detailedBordersMinScale"
+                )
+            ).toHaveLength(1);
+        });
+
+        it("ignores region settings while Regions is off", () => {
+            expect(
+                check({ zoomEnabled: true, zoomMaxScale: 8, regionsEnabled: false, regionCountries: "USA" })
+            ).toEqual([]);
+        });
+    });
 });

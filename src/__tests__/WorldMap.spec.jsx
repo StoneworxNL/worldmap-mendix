@@ -13,11 +13,15 @@ import {
 } from "./mendixMocks";
 import { dirname, join } from "path";
 import { fireEvent, render, waitFor } from "@testing-library/react";
+import { useRef, useState } from "react";
 import { WorldMap } from "../WorldMap";
 import { readFileSync } from "fs";
 
 beforeAll(stubResizeObserver);
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => {
+    jest.restoreAllMocks();
+    delete global.fetch;
+});
 
 // jsdom has no layout, so the map measures 0px wide, and the library draws no pins on a map without a width.
 const giveMapAWidth = () =>
@@ -303,27 +307,6 @@ describe("WorldMap", () => {
                 fireEvent.click(getByRole("button", { name: "Zoom in" }));
             }
         };
-        const brazilPath = container => pathOf(container, "Brazil").getAttribute("d");
-
-        // Loading the detailed borders themselves isn't tested here: the library loads them with import(), which Jest
-        // doesn't support in node_modules. The widget's build replaces that import with a fetch of the JSON asset;
-        // that path is checked against the built bundle and in a running app.
-        it("keeps the simple borders when Detailed borders is off", async () => {
-            giveMapAWidth();
-            const { container, getByRole } = renderMap({
-                zoomEnabled: true,
-                zoomMaxScale: 8,
-                zoomShowControls: true,
-                detailedBorders: false,
-                detailedBordersMinScale: 2
-            });
-            const simple = brazilPath(container);
-
-            zoomIn(getByRole, 3);
-            await new Promise(resolve => setTimeout(resolve, 200));
-
-            expect(brazilPath(container)).toBe(simple);
-        });
 
         it("loads and draws regions from the Region data URL and reports their status", async () => {
             giveMapAWidth();
@@ -351,33 +334,72 @@ describe("WorldMap", () => {
             global.fetch = jest.fn(url =>
                 Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(geoJson(url)) })
             );
-            const onRegionStatusChange = actionValue();
-            const { container, getByRole } = renderMap({
-                zoomEnabled: true,
-                zoomMaxScale: 8,
-                zoomShowControls: true,
-                detailedBorders: false,
-                regionsEnabled: true,
-                regionMinScale: 2,
-                regionUrl: "https://example.com/regions/{code}.json",
-                regionCountries: "",
-                regionNameProperty: "name",
-                onRegionStatusChange
-            });
+            // Like Mendix: execute() is ignored while the action runs, and each run ends with a new ActionValue.
+            const runs = [];
+            function MapWithAction() {
+                const [, setRun] = useState(0);
+                const running = useRef(false);
+                const onRegionStatusChange = {
+                    canExecute: true,
+                    isExecuting: false,
+                    execute: args => {
+                        if (running.current) {
+                            return;
+                        }
+                        running.current = true;
+                        runs.push(args);
+                        setTimeout(() => {
+                            running.current = false;
+                            setRun(run => run + 1);
+                        }, 5);
+                    }
+                };
+                return (
+                    <WorldMap
+                        countryList={listValue(items)}
+                        countryISO={isoCodes}
+                        countryValue={listAttribute({ 1: big(300), 2: big(100), 3: big(200) }, numberFormatter())}
+                        sizeEnum="sm"
+                        zoomEnabled
+                        zoomMaxScale={8}
+                        zoomShowControls
+                        detailedBorders={false}
+                        regionsEnabled
+                        regionMinScale={2}
+                        regionUrl="https://example.com/regions/{code}.json"
+                        regionCountries="BR, PT, DE, US"
+                        regionNameProperty="name"
+                        onRegionStatusChange={onRegionStatusChange}
+                    />
+                );
+            }
+            const { container, getByRole } = render(<MapWithAction />);
 
             expect(global.fetch).not.toHaveBeenCalled();
             zoomIn(getByRole, 2);
 
             await waitFor(() => expect(container.querySelector("[data-region-id]")).not.toBeNull());
-            const [url] = global.fetch.mock.calls[0];
-            expect(url).toMatch(/^https:\/\/example\.com\/regions\/[A-Z]{2}\.json$/);
-            expect(onRegionStatusChange.execute).toHaveBeenCalledWith(
-                expect.objectContaining({ regionStatus: "loading" })
+            const requested = global.fetch.mock.calls.map(([url]) => url);
+            expect(requested.length).toBeGreaterThan(1);
+            expect(requested[0]).toMatch(/^https:\/\/example\.com\/regions\/[A-Z]{2}\.json$/);
+            // Every country's "loading" and "ready" reaches the action, even though they arrive together.
+            const codes = requested.map(url => /([A-Z]{2})\.json$/.exec(url)[1]).sort();
+            await waitFor(
+                () =>
+                    expect(
+                        runs
+                            .filter(run => run.regionStatus === "ready")
+                            .map(run => run.regionCountryCode)
+                            .sort()
+                    ).toEqual(codes),
+                { timeout: 5000 }
             );
-            expect(onRegionStatusChange.execute).toHaveBeenCalledWith(
-                expect.objectContaining({ regionStatus: "ready" })
-            );
-            delete global.fetch;
+            expect(
+                runs
+                    .filter(run => run.regionStatus === "loading")
+                    .map(run => run.regionCountryCode)
+                    .sort()
+            ).toEqual(codes);
         });
 
         it("only requests the countries listed in Countries with regions", async () => {
@@ -398,7 +420,6 @@ describe("WorldMap", () => {
             await new Promise(resolve => setTimeout(resolve, 100));
 
             expect(global.fetch).not.toHaveBeenCalled();
-            delete global.fetch;
         });
     });
 

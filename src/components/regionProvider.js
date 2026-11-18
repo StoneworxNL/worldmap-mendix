@@ -1,7 +1,8 @@
 import { createFailedDetailResult, createReadyDetailResult, createUnavailableDetailResult } from "react-svg-worldmap";
+import { geoArea } from "d3-geo";
 
 // Turns the widget's "Countries with regions" text ("US, ca;BR") into a set of upper-case ISO codes. Empty: undefined,
-// meaning every country.
+// meaning every country. (check() in WorldMap.editorConfig.js splits the text the same way to warn about bad codes.)
 export function parseCountryCodes(text) {
     const codes = (text ?? "")
         .split(/[\s,;]+/)
@@ -18,20 +19,17 @@ export function regionUrlFor(template, countryCode) {
     return /^([a-z][a-z\d+.-]*:)?\/\//i.test(url) || url.startsWith("/") ? url : appRoot() + url;
 }
 
-// Whether a ring of [longitude, latitude] points runs clockwise (with north up), by the sign of its planar area.
-function isClockwise(ring) {
-    let sum = 0;
-    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-        sum += (ring[i][0] - ring[j][0]) * (ring[i][1] + ring[j][1]);
-    }
-    return sum > 0;
-}
-
 // GeoJSON (RFC 7946) runs exterior rings counter-clockwise, d3 (which draws the map) expects them clockwise, and files
-// in the wild use either. Rewind every polygon to d3's order: exterior clockwise, holes counter-clockwise. With the
-// wrong order, d3 treats a region as the whole globe minus the region. The first ring is the exterior.
+// in the wild use either. With the wrong order, d3 treats a region as the whole globe minus the region. d3 measures a
+// ring on the sphere, so a ring that encloses more than half the globe (2π steradians) on its own runs the wrong way
+// for an exterior and the right way for a hole. Measuring on the sphere, not in the plane, also gets rings that cross
+// the antimeridian or circle a pole right. The first ring is the exterior.
+const HALF_SPHERE = 2 * Math.PI;
 function rewindPolygon(rings) {
-    return rings.map((ring, i) => (isClockwise(ring) === (i === 0) ? ring : [...ring].reverse()));
+    return rings.map((ring, i) => {
+        const inverted = geoArea({ type: "Polygon", coordinates: [ring] }) > HALF_SPHERE;
+        return inverted === (i === 0) ? [...ring].reverse() : ring;
+    });
 }
 
 function toRegionGeometry(geometry) {
@@ -55,7 +53,8 @@ export function toRegionCollection(geoJson, countryCode, nameProperty) {
         }
         const properties = feature.properties ?? {};
         const name = properties[nameProperty || "name"] ?? properties.name ?? "";
-        return [{ id: `${countryCode}-${feature.id ?? index}`, countryCode, name: String(name), geometry }];
+        // The position in the file, not feature.id, which files may leave out for some features only: ids must be unique.
+        return [{ id: `${countryCode}-${index}`, countryCode, name: String(name), geometry }];
     });
     return { countryCode, regions };
 }

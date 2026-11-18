@@ -109,7 +109,8 @@ export function check(values) {
             message: `Maximum zoom must be between ${MIN_ZOOM} and ${MAX_ZOOM}.`
         });
     }
-    const maxScale = values.zoomMaxScale ?? 8;
+    // The maximum zoom the map really uses: clamped like in components/WorldMapComponent.jsx.
+    const maxScale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, values.zoomMaxScale ?? 8));
     for (const [key, caption, enabled] of [
         ["detailedBordersMinScale", "Detailed borders from zoom", values.zoomEnabled && values.detailedBorders],
         ["regionMinScale", "Regions from zoom", values.zoomEnabled && values.regionsEnabled]
@@ -137,6 +138,20 @@ export function check(values) {
             property: "regionUrl",
             severity: "warning",
             message: "The Region data URL has no {code}, so every country loads the same file."
+        });
+    }
+    // Split like parseCountryCodes() in components/regionProvider.js (not imported: it would pull the map library into
+    // Studio Pro's editor bundle).
+    const badCodes = values.regionsEnabled
+        ? (values.regionCountries ?? "")
+              .split(/[\s,;]+/)
+              .filter(Boolean)
+              .filter(code => !/^[a-z]{2}$/i.test(code))
+        : [];
+    if (badCodes.length > 0) {
+        errors.push({
+            property: "regionCountries",
+            message: `Use two-letter ISO codes (e.g. "US, CA"), not ${badCodes.map(code => `"${code}"`).join(", ")}.`
         });
     }
     if (values.pinList && !values.zoomEnabled) {

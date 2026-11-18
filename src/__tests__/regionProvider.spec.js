@@ -4,6 +4,7 @@ import {
     regionUrlFor,
     toRegionCollection
 } from "../components/regionProvider";
+import { geoArea } from "d3-geo";
 
 // A 1x1 degree square, counter-clockwise (the GeoJSON order), with a counter-clockwise hole.
 const square = [
@@ -85,10 +86,29 @@ describe("toRegionCollection", () => {
         expect(collection.regions[0].geometry.coordinates[0][0]).toBe(clockwise);
     });
 
+    it("rewinds rings that cross the antimeridian correctly", () => {
+        // Counter-clockwise, from 179°E across 180° to 179°W: a plain planar area gets this ring's direction wrong.
+        const acrossAntimeridian = [
+            [179, 60],
+            [-179, 60],
+            [-179, 61],
+            [179, 61],
+            [179, 60]
+        ];
+        const collection = toRegionCollection(
+            featureCollection([{ properties: {}, geometry: { type: "Polygon", coordinates: [acrossAntimeridian] } }]),
+            "RU"
+        );
+        const geometry = collection.regions[0].geometry;
+
+        expect(geometry.coordinates[0]).toEqual([...acrossAntimeridian].reverse());
+        expect(geoArea(geometry)).toBeLessThan(0.01);
+    });
+
     it("names regions from the configured property, skips features that aren't polygons", () => {
         const collection = toRegionCollection(
             featureCollection([
-                { id: "a", properties: { shapeName: "Utrecht" }, geometry: { type: "Polygon", coordinates: [square] } },
+                { id: 2, properties: { shapeName: "Utrecht" }, geometry: { type: "Polygon", coordinates: [square] } },
                 { properties: { shapeName: "A point" }, geometry: { type: "Point", coordinates: [0, 0] } },
                 { properties: { name: "Fallback" }, geometry: { type: "Polygon", coordinates: [square] } }
             ]),
@@ -96,8 +116,9 @@ describe("toRegionCollection", () => {
             "shapeName"
         );
 
+        // Ids come from the position in the file, so a feature id (2) can't collide with another feature's position.
         expect(collection.regions.map(({ id, name, countryCode }) => ({ id, name, countryCode }))).toEqual([
-            { id: "NL-a", name: "Utrecht", countryCode: "NL" },
+            { id: "NL-0", name: "Utrecht", countryCode: "NL" },
             { id: "NL-2", name: "Fallback", countryCode: "NL" }
         ]);
     });
