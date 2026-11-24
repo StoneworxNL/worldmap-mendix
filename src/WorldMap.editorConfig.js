@@ -46,35 +46,137 @@
  * @param {("web"|"desktop")} target
  * @returns {Properties}
  */
+// Keep in sync with the clamp in components/WorldMapComponent.jsx.
+const MIN_ZOOM = 2;
+const MAX_ZOOM = 20;
+
 export function getProperties(values, defaultProperties, target) {
-    // Do the values manipulation here to control the visibility of properties in Studio and Studio Pro conditionally.
-    /* Example
-    if (values.myProperty === "custom") {
-        delete defaultProperties.properties.myOtherProperty;
+    if (!values.zoomEnabled) {
+        hideProperties(defaultProperties, [
+            "zoomMaxScale",
+            "zoomShowControls",
+            "showCountryLabels",
+            "labelColor",
+            "detailedBorders",
+            "detailedBordersMinScale"
+        ]);
+    } else {
+        if (!values.showCountryLabels) {
+            hideProperties(defaultProperties, ["labelColor"]);
+        }
+        if (!values.detailedBorders) {
+            hideProperties(defaultProperties, ["detailedBordersMinScale"]);
+        }
     }
-    */
+    if (!values.regionsEnabled) {
+        hideProperties(defaultProperties, [
+            "regionMinScale",
+            "regionUrl",
+            "regionCountries",
+            "regionNameProperty",
+            "onRegionStatusChange"
+        ]);
+    }
+    if (!values.pinList) {
+        hideProperties(defaultProperties, ["pinLatitude", "pinLongitude", "pinCaption", "pinColor"]);
+    }
     return defaultProperties;
 }
 
-// /**
-//  * @param {Object} values
-//  * @returns {Problem[]} returns a list of problems.
-//  */
-// export function check(values) {
-//    /** @type {Problem[]} */
-//    const errors = [];
-//    // Add errors to the above array to throw errors in Studio and Studio Pro.
-//    /* Example
-//    if (values.myProperty !== "custom") {
-//        errors.push({
-//            property: `myProperty`,
-//            message: `The value of 'myProperty' is different of 'custom'.`,
-//            url: "https://github.com/myrepo/mywidget"
-//        });
-//    }
-//    */
-//    return errors;
-// }
+function hideProperties(propertyGroups, keys) {
+    for (const group of propertyGroups) {
+        group.properties = group.properties?.filter(property => !keys.includes(property.key));
+        if (group.propertyGroups) {
+            hideProperties(group.propertyGroups, keys);
+        }
+    }
+}
+
+/**
+ * @param {Object} values
+ * @returns {Problem[]} returns a list of problems.
+ */
+export function check(values) {
+    /** @type {Problem[]} */
+    const errors = [];
+    if (
+        values.zoomEnabled &&
+        values.zoomMaxScale != null &&
+        (values.zoomMaxScale < MIN_ZOOM || values.zoomMaxScale > MAX_ZOOM)
+    ) {
+        errors.push({
+            property: "zoomMaxScale",
+            message: `Maximum zoom must be between ${MIN_ZOOM} and ${MAX_ZOOM}.`
+        });
+    }
+    // The maximum zoom the map really uses: clamped like in components/WorldMapComponent.jsx.
+    const maxScale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, values.zoomMaxScale ?? 8));
+    for (const [key, caption, enabled] of [
+        ["detailedBordersMinScale", "Detailed borders from zoom", values.zoomEnabled && values.detailedBorders],
+        ["regionMinScale", "Regions from zoom", values.zoomEnabled && values.regionsEnabled]
+    ]) {
+        const scale = values[key];
+        if (enabled && scale != null && (scale < 1 || scale > maxScale)) {
+            errors.push({
+                property: key,
+                severity: "warning",
+                message: `${caption} must be between 1 and the maximum zoom (${maxScale}); the nearest of those is used.`
+            });
+        }
+    }
+    if (values.regionsEnabled && !values.zoomEnabled) {
+        errors.push({
+            property: "regionsEnabled",
+            severity: "warning",
+            message: "Regions are only drawn when zoomed in. Turn on Zoom and pan on the Zoom tab."
+        });
+    }
+    if (values.regionsEnabled && !values.regionUrl?.trim()) {
+        errors.push({
+            property: "regionUrl",
+            message: "Enter the Region data URL, with {code} or {code3} for the country code, e.g. regions/{code}.json."
+        });
+    } else if (values.regionsEnabled && !/\{code3?\}/i.test(values.regionUrl)) {
+        errors.push({
+            property: "regionUrl",
+            severity: "warning",
+            message: "The Region data URL has no {code} or {code3}, so every country loads the same file."
+        });
+    }
+    // Split like parseCountryCodes() in components/regionProvider.js (not imported: it would pull the map library into
+    // Studio Pro's editor bundle).
+    const badCodes = values.regionsEnabled
+        ? (values.regionCountries ?? "")
+              .split(/[\s,;]+/)
+              .filter(Boolean)
+              .filter(code => !/^[a-z]{2}$/i.test(code))
+        : [];
+    if (badCodes.length > 0) {
+        errors.push({
+            property: "regionCountries",
+            message: `Use two-letter ISO codes (e.g. "US, CA"), not ${badCodes.map(code => `"${code}"`).join(", ")}.`
+        });
+    }
+    if (values.pinList && !values.zoomEnabled) {
+        errors.push({
+            property: "pinList",
+            severity: "warning",
+            message:
+                "Zoom and pan is off, so pins that overlap another pin or its caption stay hidden. Turn on zoom, or use short captions and few pins."
+        });
+    }
+    if (values.pinList) {
+        for (const [key, caption] of [
+            ["pinLatitude", "Latitude"],
+            ["pinLongitude", "Longitude"]
+        ]) {
+            if (!values[key]) {
+                errors.push({ property: key, message: `Select the ${caption} attribute for the pins.` });
+            }
+        }
+    }
+    return errors;
+}
 
 // /**
 //  * @param {object} values

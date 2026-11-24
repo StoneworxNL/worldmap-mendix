@@ -13,6 +13,7 @@
     <description>
         World Map SVG Mendix Pluggable Widget based on https://yanivam.github.io/react-svg-worldmap
     </description>
+    <studioProCategory>Display</studioProCategory>
     <icon />
     <properties>
         <propertyGroup caption="General">
@@ -39,7 +40,9 @@
             </property>
             <property key="valueSuffix" type="textTemplate" required="false">
                 <caption>Value suffix</caption>
-                <description>Text shown after the value in the country tooltip (e.g. "people"). Leave empty for no suffix.</description>
+                <description>
+                    Text shown after the value in the country tooltip (e.g. "people"). Leave empty for no suffix.
+                </description>
             </property>
             <property key="sizeEnum" type="enumeration" defaultValue="responsive">
                 <caption>Size</caption>
@@ -57,6 +60,17 @@
                 <caption>Color</caption>
                 <description>Color for highlighted countries (e.g. "red" or "#ff0000").</description>
             </property>
+            <property key="theme" type="enumeration" defaultValue="default">
+                <caption>Theme</caption>
+                <description>
+                    Atlas: blue water, slate borders and light land for countries without data, with borders that stay
+                    one pixel wide when zoomed in.
+                </description>
+                <enumerationValues>
+                    <enumerationValue key="default">Default</enumerationValue>
+                    <enumerationValue key="atlas">Atlas</enumerationValue>
+                </enumerationValues>
+            </property>
 
             <!-- Action property -->
             <property key="onClickAction" type="action">
@@ -65,6 +79,138 @@
                 <actionVariables>
                     <actionVariable key="clickedIsoCode" type="String" caption="Clicked Country ISO Code" />
                 </actionVariables>
+            </property>
+        </propertyGroup>
+        <propertyGroup caption="Zoom">
+            <property key="zoomEnabled" type="boolean" defaultValue="false">
+                <caption>Zoom and pan</caption>
+                <description>
+                    Let users zoom and pan the map with the zoom buttons, by dragging, by double-clicking, with the
+                    keyboard and with Ctrl/Cmd + mouse wheel. A plain mouse wheel still scrolls the page.
+                </description>
+            </property>
+            <property key="zoomMaxScale" type="integer" defaultValue="8">
+                <caption>Maximum zoom</caption>
+                <description>How far users can zoom in, as a multiple of the whole map. From 2 to 20.</description>
+            </property>
+            <property key="zoomShowControls" type="boolean" defaultValue="true">
+                <caption>Zoom buttons</caption>
+                <description>
+                    Show the zoom in, zoom out and reset buttons in the bottom-right corner of the map.
+                </description>
+            </property>
+            <property key="showCountryLabels" type="boolean" defaultValue="true">
+                <caption>Country names</caption>
+                <description>
+                    Show the names of countries they fit inside. More names appear as users zoom in.
+                </description>
+            </property>
+            <property key="labelColor" type="string" required="false">
+                <caption>Country name color</caption>
+                <description>
+                    Color of the country names (e.g. "#222222"). Leave empty for the default dark gray.
+                </description>
+            </property>
+            <property key="detailedBorders" type="boolean" defaultValue="true">
+                <caption>Detailed borders</caption>
+                <description>
+                    Draw sharper country borders and coastlines when zoomed in. They are downloaded once (about 2.4 MB,
+                    less when the server compresses it), as soon as a user points at the map.
+                </description>
+            </property>
+            <property key="detailedBordersMinScale" type="integer" defaultValue="2">
+                <caption>Detailed borders from zoom</caption>
+                <description>
+                    The zoom level at which the detailed borders are drawn. At most the maximum zoom.
+                </description>
+            </property>
+        </propertyGroup>
+        <propertyGroup caption="Regions">
+            <property key="regionsEnabled" type="boolean" defaultValue="false">
+                <caption>Regions</caption>
+                <description>
+                    When zoomed in, draw the borders of the states, provinces or other regions of the countries in view,
+                    as dashed lines. Needs zoom and pan, and region data in GeoJSON format (see Region data URL).
+                </description>
+            </property>
+            <property key="regionMinScale" type="integer" defaultValue="4">
+                <caption>Regions from zoom</caption>
+                <description>
+                    The zoom level at which regions are loaded and drawn. At most the maximum zoom.
+                </description>
+            </property>
+            <property key="regionUrl" type="string" required="false" defaultValue="regions/{code}.json">
+                <caption>Region data URL</caption>
+                <description>
+                    Address of a GeoJSON FeatureCollection with one country's regions (Polygon or MultiPolygon
+                    features). {code} is replaced by the country's two-letter ISO code (e.g. PT), {code3} by its
+                    three-letter code (e.g. PRT). Keep the files in the app: the default, "regions/{code}.json", is
+                    relative to the app's root URL, i.e. the theme's web/regions folder. Another site gets every user's
+                    IP address and must be allowed by the app's Content Security Policy.
+                </description>
+            </property>
+            <property key="regionCountries" type="string" required="false">
+                <caption>Countries with regions</caption>
+                <description>
+                    Two-letter ISO codes of the countries the Region data URL has data for, separated by commas (e.g.
+                    "US, CA, BR"). Leave empty to try every country in view; countries without a file are then requested
+                    and skipped.
+                </description>
+            </property>
+            <property key="regionNameProperty" type="string" defaultValue="name">
+                <caption>Region name property</caption>
+                <description>
+                    The GeoJSON feature property that holds the region's name, e.g. "name" or "shapeName".
+                </description>
+            </property>
+            <property key="onRegionStatusChange" type="action" required="false">
+                <caption>On region status change</caption>
+                <description>
+                    Runs when a country's regions start loading, finish loading, aren't available or fail to load, and
+                    when regions are hidden again (status "idle", no country).
+                </description>
+                <actionVariables>
+                    <actionVariable key="regionStatus" type="String" caption="Region status" />
+                    <actionVariable key="regionCountryCode" type="String" caption="Region country ISO code" />
+                </actionVariables>
+            </property>
+        </propertyGroup>
+        <propertyGroup caption="Pins">
+            <property key="pinList" type="datasource" isList="true" required="false">
+                <caption>Pins</caption>
+                <description>
+                    Markers with a caption, drawn at a latitude and longitude, with or without zoom. When pins overlap,
+                    the one that comes first in the list is shown.
+                </description>
+            </property>
+            <property key="pinLatitude" type="attribute" dataSource="pinList" required="false">
+                <caption>Latitude</caption>
+                <description>
+                    Latitude in degrees, from -90 (south) to 90 (north). Pins without a valid latitude and longitude are
+                    skipped.
+                </description>
+                <attributeTypes>
+                    <attributeType name="Decimal" />
+                    <attributeType name="Integer" />
+                    <attributeType name="Long" />
+                </attributeTypes>
+            </property>
+            <property key="pinLongitude" type="attribute" dataSource="pinList" required="false">
+                <caption>Longitude</caption>
+                <description>Longitude in degrees, from -180 (west) to 180 (east).</description>
+                <attributeTypes>
+                    <attributeType name="Decimal" />
+                    <attributeType name="Integer" />
+                    <attributeType name="Long" />
+                </attributeTypes>
+            </property>
+            <property key="pinCaption" type="textTemplate" dataSource="pinList" required="false">
+                <caption>Caption</caption>
+                <description>Text shown next to the pin, e.g. the city name.</description>
+            </property>
+            <property key="pinColor" type="string" required="false">
+                <caption>Pin color</caption>
+                <description>Fill color of the pins (e.g. "#b91c1c"). Leave empty for the default red.</description>
             </property>
         </propertyGroup>
     </properties>

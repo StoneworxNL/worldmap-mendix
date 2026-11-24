@@ -19,6 +19,12 @@ countries on a world map.
     optional, translatable suffix such as "people".
 -   A responsive size that fills its container, or fixed widths from 240px to 1200px.
 -   An On Click action that receives the clicked country's ISO code.
+-   Optional zoom and pan, with zoom buttons and country names that appear as you zoom in.
+-   Optional pins: markers with a caption at a latitude and longitude, e.g. offices or cities.
+-   An optional Atlas theme: blue water, slate borders and light land.
+-   Sharper (Natural Earth 10m) country borders when zoomed in, downloaded only when a user zooms in that far.
+-   Optional regions: states, provinces or other regions of the countries in view, from your own GeoJSON files, drawn as
+    dashed lines when zoomed in, with an action that reports their loading status.
 -   Works anywhere on a page; no data view needed. The widget's Class and Style properties apply to the map.
 -   A design-mode preview in Studio Pro.
 
@@ -37,21 +43,31 @@ Mendix 11.12.5 or later. The widget is built with the Mendix 11.15 widget tools 
    width; the other sizes are fixed widths that shrink to fit a smaller container.
 5. Optionally, set a value suffix to show after the value in the country tooltip, e.g. "people" (empty by default). It
    is a translatable text, so it can differ per language.
+6. Optionally, turn on zoom and pan on the Zoom tab, and add pins on the Pins tab (see "Zoom and pins" below).
 
 ![The World Map properties in Studio Pro](https://raw.githubusercontent.com/StoneworxNL/worldmap-mendix/main/images/config.png)
 
 ## Properties
 
-| Property     | Description                                                                                                                                                                                                                     |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Countries    | The data source with one object per country.                                                                                                                                                                                    |
-| Country ISO  | String attribute with the country's two-letter ISO 3166-1 code, e.g. "PT". Case and surrounding spaces are ignored. Two regions use other codes; see "Tooltips and data" below.                                                 |
-| Value        | Integer, Long, Decimal or String attribute. Numbers set how strongly the country is colored; text is shown in the tooltip.                                                                                                      |
-| Value suffix | Optional, translatable text shown after the value in the tooltip, e.g. "people". Empty by default.                                                                                                                              |
-| Size         | Responsive (Auto), the default: the full width of the container, with a height of 3/4 of the width. Or a fixed width: sm (240px), md (336px), lg (480px), xl (640px) or xxl (1200px), which shrinks to fit a smaller container. |
-| Color        | Color of highlighted countries, e.g. "red" or "#0f828c". If left empty, the map uses light gray (`#dddddd`).                                                                                                                    |
-| On Click     | Optional action to run when a country is clicked. The clicked country's ISO code is available to it as the `$clickedIsoCode` variable.                                                                                          |
-| Class, Style | The Common tab's Class and Style properties are applied to the map's root element.                                                                                                                                              |
+| Property            | Description                                                                                                                                                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Countries           | The data source with one object per country.                                                                                                                                                                                    |
+| Country ISO         | String attribute with the country's two-letter ISO 3166-1 code, e.g. "PT". Case and surrounding spaces are ignored. Two regions use other codes; see "Tooltips and data" below.                                                 |
+| Value               | Integer, Long, Decimal or String attribute. Numbers set how strongly the country is colored; text is shown in the tooltip.                                                                                                      |
+| Value suffix        | Optional, translatable text shown after the value in the tooltip, e.g. "people". Empty by default.                                                                                                                              |
+| Size                | Responsive (Auto), the default: the full width of the container, with a height of 3/4 of the width. Or a fixed width: sm (240px), md (336px), lg (480px), xl (640px) or xxl (1200px), which shrinks to fit a smaller container. |
+| Color               | Color of highlighted countries, e.g. "red" or "#0f828c". If left empty, the map uses light gray (`#dddddd`).                                                                                                                    |
+| On Click            | Optional action to run when a country is clicked. The clicked country's ISO code is available to it as the `$clickedIsoCode` variable.                                                                                          |
+| Zoom and pan        | Zoom tab. Off by default. Lets users zoom and pan the map; see "Zoom and pins" below.                                                                                                                                           |
+| Maximum zoom        | Zoom tab. How far users can zoom in, as a multiple of the whole map. Default 8, from 2 to 20.                                                                                                                                   |
+| Zoom buttons        | Zoom tab. Shows the zoom in, zoom out and reset buttons in the map's bottom-right corner. On by default.                                                                                                                        |
+| Country names       | Zoom tab. Shows the names of countries they fit inside; more appear as users zoom in. On by default.                                                                                                                            |
+| Country name color  | Zoom tab. Color of the country names. If left empty, dark gray (`#222222`).                                                                                                                                                     |
+| Pins                | Pins tab. Optional data source with one object per pin.                                                                                                                                                                         |
+| Latitude, Longitude | Pins tab. Decimal, Integer or Long attributes with the pin's position in degrees: latitude from -90 to 90, longitude from -180 to 180. Pins without a valid position are skipped.                                               |
+| Caption             | Pins tab. Text shown next to the pin, e.g. the city name. It can include attribute values.                                                                                                                                      |
+| Pin color           | Pins tab. Fill color of the pins. If left empty, red (`#b91c1c`).                                                                                                                                                               |
+| Class, Style        | The Common tab's Class and Style properties are applied to the map's root element.                                                                                                                                              |
 
 ### Tooltips and data
 
@@ -66,6 +82,78 @@ Somaliland instead of being skipped, and clicking either region passes `CYP` or 
 Objects without a value, or with an ISO code the map doesn't know (e.g. "PRT"), are not shown. If several objects have
 the same ISO code (ignoring case and spaces), the last one with a value is used. Long tooltips may extend beyond the
 map; a parent container with `overflow: hidden` will clip them.
+
+## Zoom and pins
+
+With **Zoom and pan** on, users can zoom with the zoom buttons, by double-clicking, with Ctrl/Cmd + mouse wheel or a
+trackpad pinch, or with the keyboard once the map has focus (`+` and `-` to zoom, the arrow keys to pan, Escape to
+reset), and pan by dragging. A plain mouse wheel still scrolls the page. While zooming, the map shows the names of the
+countries they fit inside. Clicking a country still runs the On Click action. A zoomable map clips its content to its
+box, so tooltips near its edges can be cut off.
+
+**Pins** are drawn with or without zoom. Each pin needs a latitude and a longitude; the caption is optional. Pins don't
+respond to clicks.
+
+When two pins overlap, counting their captions, only the one that comes first in the Pins data source is drawn, so sort
+the data source by importance. Zooming in makes room for the others. **With zoom off, overlapping pins stay hidden, and
+long captions hide more pins**: Studio Pro shows a warning for pins without zoom. Keep the Pins data source to a few
+hundred objects at most (for example with an XPath constraint): every pin is checked against the others each time the
+map zooms.
+
+On a map without zoom, pin captions near the edge of the map can extend beyond it, like tooltips do.
+
+### Detailed borders
+
+With zoom on, the map switches to detailed (Natural Earth 1:10m) country borders and coastlines from zoom level 2
+(**Detailed borders from zoom**). The widget ships them as a separate file, `assets/countries-detailed-<version>.json`
+(about 2.4 MB, much less when the server compresses it), next to its JavaScript. It is downloaded once, the first time
+the pointer is over a zoomable map, and not at all for maps without zoom. Turn **Detailed borders** off to never
+download it.
+
+The file's address is built from Mendix's `mx.remoteUrl` and the widget's `dist` folder. This has been checked on a
+local Studio Pro run only: check it once on your deployed environment (for example Mendix Cloud, or on premises behind
+IIS or nginx with a context path), and make sure the server sends `.json` files compressed.
+
+### Regions
+
+With **Regions** on (Regions tab, needs zoom), the map draws the regions of the countries in view as dashed lines from
+**Regions from zoom** (default 4). The widget doesn't include region data: **Region data URL** is the address of a
+GeoJSON FeatureCollection per country. It can use two placeholders:
+
+-   `{code}`: the country's two-letter ISO 3166-1 code in upper case, e.g. `PT`.
+-   `{code3}`: its three-letter code, e.g. `PRT`, so files named like geoBoundaries' (e.g.
+    `geoBoundaries-{code3}-ADM1_simplified.geojson`) work without renaming. Northern Cyprus and Somaliland have no
+    three-letter ISO code, so they get no regions with `{code3}`.
+
+**Keep the files in your app.** The default, `regions/{code}.json`, is relative to the app's root URL, so it reads the
+files from your app's `theme/web/regions` folder (`theme/web/regions/PT.json`, and so on). Polygons may use either ring
+order. **Countries with regions** (e.g. `US, CA, BR`) limits the requests to the countries you have files for; when it's
+empty, every country in view is requested once, and a 404 counts as "no regions". **Region name property** is the
+feature property with the region's name (default `name`).
+
+An address on another site works too, but every end user's browser then requests the files from that site: it gets
+their IP addresses (a privacy and GDPR concern), the app's Content Security Policy must allow it in `connect-src` (Mendix
+Cloud's HTTP headers, for example, block it unless you add it), the site must allow cross-origin requests, and the files
+can change without your app knowing.
+
+Natural Earth's [Admin 1 – States, Provinces](https://www.naturalearthdata.com/downloads/50m-cultural-vectors/) (public
+domain) and [geoBoundaries](https://www.geoboundaries.org/) (name property `shapeName`) are good sources. geoBoundaries
+is licensed under CC BY 4.0, so an app that shows its regions must credit it on screen, for example with a line below
+the map. Use simplified files (geoBoundaries' `_simplified` files, or Natural Earth's 1:50m): full-resolution region
+files can be tens of MB per country, and the widget processes them in the browser's main thread, so the page freezes
+while a large file loads.
+
+**On region status change** runs with a country's latest status when its regions start loading (`loading`), are drawn
+(`ready`), have no file (`unavailable`) or fail to load (`failed`), and with `idle` when the user zooms out past Regions
+from zoom. Its variables are the status and the country's ISO code (empty for `idle`). Zooming over many countries
+reports many statuses, and the action runs them one at a time: only each country's latest status waits its turn, and
+`idle` drops the ones that haven't run yet. Use a nanoflow for this action; a microflow makes a server round trip for
+every status. Regions don't respond to clicks or show tooltips.
+
+### Language
+
+Country names, the zoom buttons' screen-reader labels and the zoom status announcements come from react-svg-worldmap and
+are in English only, also in apps in other languages.
 
 ## On Click Action
 
