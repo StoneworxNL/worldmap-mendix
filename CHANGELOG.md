@@ -23,8 +23,11 @@ All notable changes to the World Map widget are documented in this file.
 -   Detailed borders (Zoom tab, on by default): sharper Natural Earth 10m country borders from a configurable zoom
     level. They are a separate 2.4 MB file in the widget package, downloaded only when a user points at a zoomable map.
 -   Regions (new Regions tab, off by default): the states, provinces or other regions of the countries in view, as
-    dashed lines from a configurable zoom level. They come from GeoJSON files per country at a URL you set, optionally
-    limited to a list of countries. An On region status change action receives each country's loading status.
+    dashed lines from a configurable zoom level. They come from GeoJSON files per country, by default from the app's
+    `theme/web/regions` folder (`regions/{code}.json`), optionally limited to a list of countries. The Region data URL
+    takes the two-letter (`{code}`) or three-letter (`{code3}`, e.g. geoBoundaries' file names) ISO code. An On region
+    status change action receives each country's latest loading status: statuses that haven't run yet are replaced by
+    newer ones, and dropped when the regions are hidden again.
 
 ### Changed
 

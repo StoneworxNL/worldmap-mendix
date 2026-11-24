@@ -23,6 +23,15 @@ jobs:
             - run: npm test
             # Runs lint first (the prerelease script).
             - run: npm run release
+            # The package must hold the license notices and the detailed borders (a Windows build has left LICENSE out).
+            - name: Check the package contents
+              run: |
+                  mpk=$(ls dist/*/*.mpk)
+                  files=$(unzip -Z1 "$mpk")
+                  echo "$files"
+                  echo "$files" | grep -Eq "(^|/)LICENSE$" || { echo "::error::$mpk has no LICENSE"; exit 1; }
+                  echo "$files" | grep -Eq "(^|/)assets/countries-detailed-[^/]*\.json$" ||
+                      { echo "::error::$mpk has no assets/countries-detailed-*.json"; exit 1; }
             - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
               with:
                   name: widget-mpk

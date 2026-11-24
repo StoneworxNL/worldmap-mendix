@@ -132,12 +132,15 @@ export function check(values) {
         });
     }
     if (values.regionsEnabled && !values.regionUrl?.trim()) {
-        errors.push({ property: "regionUrl", message: "Enter the Region data URL, with {code} for the country code." });
-    } else if (values.regionsEnabled && !/\{code\}/i.test(values.regionUrl)) {
+        errors.push({
+            property: "regionUrl",
+            message: "Enter the Region data URL, with {code} or {code3} for the country code, e.g. regions/{code}.json."
+        });
+    } else if (values.regionsEnabled && !/\{code3?\}/i.test(values.regionUrl)) {
         errors.push({
             property: "regionUrl",
             severity: "warning",
-            message: "The Region data URL has no {code}, so every country loads the same file."
+            message: "The Region data URL has no {code} or {code3}, so every country loads the same file."
         });
     }
     // Split like parseCountryCodes() in components/regionProvider.js (not imported: it would pull the map library into

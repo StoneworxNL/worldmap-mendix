@@ -139,14 +139,14 @@
                     The zoom level at which regions are loaded and drawn. At most the maximum zoom.
                 </description>
             </property>
-            <property key="regionUrl" type="string" required="false">
+            <property key="regionUrl" type="string" required="false" defaultValue="regions/{code}.json">
                 <caption>Region data URL</caption>
                 <description>
                     Address of a GeoJSON FeatureCollection with one country's regions (Polygon or MultiPolygon
-                    features).
-                    {code} is replaced by the country's two-letter ISO code in upper case, e.g.
-                    "regions/{code}.geojson" or "https://example.com/admin1/{code}.json". A relative address is relative
-                    to the app's root URL, so files in the theme's web folder work. Each country is loaded once.
+                    features). {code} is replaced by the country's two-letter ISO code (e.g. PT), {code3} by its
+                    three-letter code (e.g. PRT). Keep the files in the app: the default, "regions/{code}.json", is
+                    relative to the app's root URL, i.e. the theme's web/regions folder. Another site gets every user's
+                    IP address and must be allowed by the app's Content Security Policy.
                 </description>
             </property>
             <property key="regionCountries" type="string" required="false">

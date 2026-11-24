@@ -1,5 +1,6 @@
 import { createFailedDetailResult, createReadyDetailResult, createUnavailableDetailResult } from "react-svg-worldmap";
 import { geoArea } from "d3-geo";
+import { toAlpha3 } from "./countryCodes";
 
 // Turns the widget's "Countries with regions" text ("US, ca;BR") into a set of upper-case ISO codes. Empty: undefined,
 // meaning every country. (check() in WorldMap.editorConfig.js splits the text the same way to warn about bad codes.)
@@ -14,8 +15,17 @@ export function parseCountryCodes(text) {
 // The app's root URL (Mendix's global mx.remoteUrl), so that "regions/{code}.json" also works on pages like /p/home.
 const appRoot = () => window.mx?.remoteUrl || "/";
 
+// {code} is the two-letter ISO 3166-1 code, {code3} the three-letter one (e.g. PT and PRT). Returns undefined when the
+// template needs a three-letter code the country doesn't have.
 export function regionUrlFor(template, countryCode) {
-    const url = template.trim().replace(/\{code\}/gi, encodeURIComponent(countryCode));
+    let url = template.trim().replace(/\{code\}/gi, encodeURIComponent(countryCode));
+    if (/\{code3\}/i.test(url)) {
+        const code3 = toAlpha3(countryCode);
+        if (!code3) {
+            return undefined;
+        }
+        url = url.replace(/\{code3\}/gi, code3);
+    }
     return /^([a-z][a-z\d+.-]*:)?\/\//i.test(url) || url.startsWith("/") ? url : appRoot() + url;
 }
 
@@ -68,9 +78,13 @@ export function createRegionProvider({ urlTemplate, countryCodes, nameProperty }
         supports: countryCode => countryCodes === undefined || countryCodes.has(countryCode.toUpperCase()),
         loadRegions: async countryCode => {
             const code = countryCode.toUpperCase();
+            const url = regionUrlFor(urlTemplate, code);
+            if (!url) {
+                return createUnavailableDetailResult(code, `${code} has no three-letter ISO code for {code3}.`);
+            }
             let response;
             try {
-                response = await fetch(regionUrlFor(urlTemplate, code));
+                response = await fetch(url);
             } catch (error) {
                 return createFailedDetailResult(code, String(error));
             }

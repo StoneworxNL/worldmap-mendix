@@ -110,24 +110,45 @@ With zoom on, the map switches to detailed (Natural Earth 1:10m) country borders
 the pointer is over a zoomable map, and not at all for maps without zoom. Turn **Detailed borders** off to never
 download it.
 
+The file's address is built from Mendix's `mx.remoteUrl` and the widget's `dist` folder. This has been checked on a
+local Studio Pro run only: check it once on your deployed environment (for example Mendix Cloud, or on premises behind
+IIS or nginx with a context path), and make sure the server sends `.json` files compressed.
+
 ### Regions
 
 With **Regions** on (Regions tab, needs zoom), the map draws the regions of the countries in view as dashed lines from
-**Regions from zoom** (default 4). The widget doesn't include region data: set **Region data URL** to the address of a
-GeoJSON FeatureCollection per country, with `{code}` for the country's two-letter ISO code, for example
-`regions/{code}.geojson`. A relative address is relative to the app's root URL, so you can put the files in your app's
-`theme/web/regions` folder. Polygons may use either ring order. **Countries with regions** (e.g. `US, CA, BR`) limits
-the requests to the countries you have files for; when it's empty, every country in view is requested once, and a 404
-counts as "no regions". **Region name property** is the feature property with the region's name (default `name`).
+**Regions from zoom** (default 4). The widget doesn't include region data: **Region data URL** is the address of a
+GeoJSON FeatureCollection per country. It can use two placeholders:
+
+-   `{code}`: the country's two-letter ISO 3166-1 code in upper case, e.g. `PT`.
+-   `{code3}`: its three-letter code, e.g. `PRT`, so files named like geoBoundaries' (e.g.
+    `geoBoundaries-{code3}-ADM1_simplified.geojson`) work without renaming. Northern Cyprus and Somaliland have no
+    three-letter ISO code, so they get no regions with `{code3}`.
+
+**Keep the files in your app.** The default, `regions/{code}.json`, is relative to the app's root URL, so it reads the
+files from your app's `theme/web/regions` folder (`theme/web/regions/PT.json`, and so on). Polygons may use either ring
+order. **Countries with regions** (e.g. `US, CA, BR`) limits the requests to the countries you have files for; when it's
+empty, every country in view is requested once, and a 404 counts as "no regions". **Region name property** is the
+feature property with the region's name (default `name`).
+
+An address on another site works too, but every end user's browser then requests the files from that site: it gets
+their IP addresses (a privacy and GDPR concern), the app's Content Security Policy must allow it in `connect-src` (Mendix
+Cloud's HTTP headers, for example, block it unless you add it), the site must allow cross-origin requests, and the files
+can change without your app knowing.
 
 Natural Earth's [Admin 1 – States, Provinces](https://www.naturalearthdata.com/downloads/50m-cultural-vectors/) (public
-domain) and [geoBoundaries](https://www.geoboundaries.org/) (CC BY 4.0, name property `shapeName`) are good sources.
-Region files from another site must allow cross-origin requests.
+domain) and [geoBoundaries](https://www.geoboundaries.org/) (name property `shapeName`) are good sources. geoBoundaries
+is licensed under CC BY 4.0, so an app that shows its regions must credit it on screen, for example with a line below
+the map. Use simplified files (geoBoundaries' `_simplified` files, or Natural Earth's 1:50m): full-resolution region
+files can be tens of MB per country, and the widget processes them in the browser's main thread, so the page freezes
+while a large file loads.
 
-**On region status change** runs each time a country's regions start loading (`loading`), are drawn (`ready`), have no
-file (`unavailable`) or fail to load (`failed`), and with `idle` when the user zooms out past Regions from zoom. Its
-variables are the status and the country's ISO code (empty for `idle`). Regions don't respond to clicks or show
-tooltips.
+**On region status change** runs with a country's latest status when its regions start loading (`loading`), are drawn
+(`ready`), have no file (`unavailable`) or fail to load (`failed`), and with `idle` when the user zooms out past Regions
+from zoom. Its variables are the status and the country's ISO code (empty for `idle`). Zooming over many countries
+reports many statuses, and the action runs them one at a time: only each country's latest status waits its turn, and
+`idle` drops the ones that haven't run yet. Use a nanoflow for this action; a microflow makes a server round trip for
+every status. Regions don't respond to clicks or show tooltips.
 
 ### Language
 

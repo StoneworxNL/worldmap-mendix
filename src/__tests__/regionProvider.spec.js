@@ -5,6 +5,8 @@ import {
     toRegionCollection
 } from "../components/regionProvider";
 import { geoArea } from "d3-geo";
+import { regions } from "react-svg-worldmap";
+import { toAlpha3 } from "../components/countryCodes";
 
 // A 1x1 degree square, counter-clockwise (the GeoJSON order), with a counter-clockwise hole.
 const square = [
@@ -54,6 +56,34 @@ describe("regionUrlFor", () => {
 
     it("falls back to the site root without Mendix's mx global", () => {
         expect(regionUrlFor("regions/{code}.json", "BR")).toBe("/regions/BR.json");
+    });
+
+    it("replaces {code3} with the three-letter ISO code, so geoBoundaries file names work as they are", () => {
+        expect(regionUrlFor("regions/geoBoundaries-{code3}-ADM1_simplified.geojson", "PT")).toBe(
+            "/regions/geoBoundaries-PRT-ADM1_simplified.geojson"
+        );
+        expect(regionUrlFor("{CODE3}/{code}.json", "us")).toBe("/USA/us.json");
+        expect(regionUrlFor("{code3}.json", "XK")).toBe("/XKX.json");
+    });
+
+    it("returns undefined when {code3} is needed but the country has no three-letter code", () => {
+        expect(regionUrlFor("{code3}.json", "ZZ")).toBeUndefined();
+        expect(regionUrlFor("{code}.json", "ZZ")).toBe("/ZZ.json");
+    });
+});
+
+describe("toAlpha3", () => {
+    // Northern Cyprus and Somaliland have no ISO code: the map gives them CYP and SOM, and {code3} skips them.
+    it("maps every two-letter code the map draws to a three-letter code", () => {
+        const missing = regions
+            .map(region => region.code)
+            .filter(code => code.length === 2)
+            .filter(code => !/^[A-Z]{3}$/.test(toAlpha3(code) ?? ""));
+
+        expect(missing).toEqual([]);
+        expect(toAlpha3("nl")).toBe("NLD");
+        expect(toAlpha3("GB")).toBe("GBR");
+        expect(toAlpha3("CYP")).toBeUndefined();
     });
 });
 
@@ -168,5 +198,15 @@ describe("createRegionProvider", () => {
 
         global.fetch = jest.fn(() => Promise.resolve(response(200, featureCollection([]))));
         expect((await provider.loadRegions("NL")).status).toBe("unavailable");
+    });
+
+    it("loads by three-letter code, and skips countries without one", async () => {
+        global.fetch = jest.fn(() => Promise.resolve(response(200, geoJson)));
+        const provider = createRegionProvider({ urlTemplate: "https://example.com/{code3}.json" });
+
+        expect((await provider.loadRegions("pt")).status).toBe("ready");
+        expect(global.fetch).toHaveBeenCalledWith("https://example.com/PRT.json");
+        expect((await provider.loadRegions("ZZ")).status).toBe("unavailable");
+        expect(global.fetch).toHaveBeenCalledTimes(1);
     });
 });

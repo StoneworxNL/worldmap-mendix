@@ -2,6 +2,7 @@ import WorldMap, { preloadDetailedCountryGeometry, regions } from "react-svg-wor
 import { createRegionProvider, parseCountryCodes } from "./regionProvider";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
+import { createStatusQueue } from "./statusQueue";
 
 // Mendix returns Integer/Long/Decimal values as Big.js objects. The map needs plain numbers to scale its shading.
 const toMapValue = value => (typeof value?.toNumber === "function" ? value.toNumber() : value);
@@ -115,23 +116,23 @@ export function WorldMapComponent({
     );
 
     // The library reports several statuses at once (e.g. "loading" for every country in view, from inside its own
-    // effect), but Mendix ignores execute() while the action is still running. So queue them, and run the next one
-    // only once Mendix hands over a new ActionValue that isn't executing. If no new ActionValue comes (an action that
-    // finishes without one), try again after a second.
-    const statusQueue = useRef([]);
+    // effect), but Mendix ignores execute() while the action is still running. So queue them, keeping only each
+    // country's latest status (see statusQueue.js), and run the next one only once Mendix hands over a new ActionValue
+    // that isn't executing. If no new ActionValue comes (an action that finishes without one), try again after a second.
+    const statusQueue = useRef(createStatusQueue());
     const executedWith = useRef(undefined);
     const [statusTick, setStatusTick] = useState(0);
     const regionStatusChange = useCallback(({ status, countryCode }) => {
-        statusQueue.current.push({ regionStatus: status, regionCountryCode: countryCode ?? "" });
+        statusQueue.current.push(status, countryCode);
         setStatusTick(tick => tick + 1);
     }, []);
     useEffect(() => {
         const action = onRegionStatusChange;
-        if (!action || statusQueue.current.length === 0) {
+        if (!action || statusQueue.current.size === 0) {
             return undefined;
         }
         if (!action.canExecute) {
-            statusQueue.current = [];
+            statusQueue.current.clear();
             return undefined;
         }
         if (action.isExecuting || executedWith.current === action) {
@@ -143,7 +144,7 @@ export function WorldMapComponent({
         }
         executedWith.current = action;
         action.execute(statusQueue.current.shift());
-        if (statusQueue.current.length > 0) {
+        if (statusQueue.current.size > 0) {
             setStatusTick(tick => tick + 1);
         }
         return undefined;

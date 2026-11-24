@@ -54,6 +54,7 @@ describe("check", () => {
             expect(messagesFor({ ...regions, regionUrl: "regions/all.json" }, "regionUrl")).toEqual([
                 expect.objectContaining({ severity: "warning" })
             ]);
+            expect(messagesFor({ ...regions, regionUrl: "regions/{code3}.json" }, "regionUrl")).toEqual([]);
         });
 
         it("rejects country codes that aren't two letters", () => {

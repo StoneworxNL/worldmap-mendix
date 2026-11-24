@@ -382,7 +382,8 @@ describe("WorldMap", () => {
             const requested = global.fetch.mock.calls.map(([url]) => url);
             expect(requested.length).toBeGreaterThan(1);
             expect(requested[0]).toMatch(/^https:\/\/example\.com\/regions\/[A-Z]{2}\.json$/);
-            // Every country's "loading" and "ready" reaches the action, even though they arrive together.
+            // Every country's latest status ("ready") reaches the action, even though the statuses arrive together.
+            // A "loading" that hasn't run yet when "ready" comes is replaced by it, so each country runs at most twice.
             const codes = requested.map(url => /([A-Z]{2})\.json$/.exec(url)[1]).sort();
             await waitFor(
                 () =>
@@ -394,12 +395,10 @@ describe("WorldMap", () => {
                     ).toEqual(codes),
                 { timeout: 5000 }
             );
-            expect(
-                runs
-                    .filter(run => run.regionStatus === "loading")
-                    .map(run => run.regionCountryCode)
-                    .sort()
-            ).toEqual(codes);
+            for (const code of codes) {
+                const statuses = runs.filter(run => run.regionCountryCode === code).map(run => run.regionStatus);
+                expect(["ready", "loading ready"]).toContain(statuses.join(" "));
+            }
         });
 
         it("only requests the countries listed in Countries with regions", async () => {
