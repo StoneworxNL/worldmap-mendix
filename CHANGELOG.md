@@ -31,6 +31,8 @@ All notable changes to the World Map widget are documented in this file.
 -   Updated react-svg-worldmap to 2.7.0 (pinned to 2.7.x), which adds zoom, pins, country names, the Atlas theme,
     detailed borders and regions. Maps without zoom and pins look and work the same as before. Maps with zoom get the
     detailed borders unless you turn them off. The widget's JavaScript is about 10 KB bigger than with 2.5.0.
+-   `LICENSE` names Stoneworx as the copyright holder and now includes the notices of bundled packages that don't ship a
+    license file (react-svg-worldmap and react-path-tooltip), and the source of the map data (Natural Earth).
 
 ## [2.2.1] - 2026-10-20
 
